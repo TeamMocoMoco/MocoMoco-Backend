@@ -1,26 +1,23 @@
-import { plainToClass } from "class-transformer";
-import { validate, ValidationError } from "class-validator";
-import express from "express";
+import { plainToClass } from "class-transformer"
+import { validate, ValidationError } from "class-validator"
+import express from "express"
 
-function validationMiddleware(
-  type: any,
-  skipMissingProperties = false
-): express.RequestHandler {
+function validationMiddleware(type: any, skipMissingProperties = false): express.RequestHandler {
   return async (req, res, next) => {
     const errors = await validate(plainToClass(type, req.body), {
       skipMissingProperties,
-    });
+    })
     if (errors.length > 0) {
       const message = errors
         .map((error: ValidationError) => {
-          return error.constraints ? error.constraints.isString : "noting";
+          return error.constraints ? error.constraints.isString : "noting"
         })
-        .join(", ");
-      next(new Error(message));
+        .join(", ")
+      next(new Error(message))
     } else {
-      next();
+      next()
     }
-  };
+  }
 }
 
-export default validationMiddleware;
+export default validationMiddleware
