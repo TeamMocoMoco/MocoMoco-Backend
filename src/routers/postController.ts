@@ -12,8 +12,6 @@ class PostController implements Controller {
   private post = PostModel;
   private dto = PostDto;
   constructor() {
-    console.log(2);
-    console.log(Date.now());
     this.initializeRoutes();
   }
 

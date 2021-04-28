@@ -1,14 +1,15 @@
 import {
   IsString,
-  IsDate,
   IsMongoId,
   IsInt,
   IsNumber,
-  MinLength,
+  IsDateString,
+  ArrayMaxSize,
+  ArrayMinSize,
 } from "class-validator";
 
 class PostDto {
-  @IsString()
+  @IsMongoId()
   readonly user: string;
 
   @IsString()
@@ -29,18 +30,18 @@ class PostDto {
   @IsString()
   readonly category: string;
 
-  @MinLength(2, {
-    each: true,
-  })
+  @IsString({ each: true })
   readonly hashtag: string[];
 
   @IsNumber({}, { each: true })
+  @ArrayMaxSize(2)
+  @ArrayMinSize(2)
   readonly location: number[];
 
-  @IsDate()
+  @IsDateString()
   readonly startDate: Date;
 
-  @IsDate()
+  @IsDateString()
   readonly dueDate: Date;
 }
 

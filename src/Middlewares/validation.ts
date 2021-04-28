@@ -13,7 +13,7 @@ function validationMiddleware(
     if (errors.length > 0) {
       const message = errors
         .map((error: ValidationError) => {
-          return error.constraints ? error.constraints.isString : "noting";
+          return error.constraints ? Object.values(error.constraints) : "";
         })
         .join(", ");
       next(new Error(message));
