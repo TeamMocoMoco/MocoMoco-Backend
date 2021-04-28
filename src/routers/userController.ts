@@ -1,4 +1,4 @@
-import express, { RequestHandler, response } from "express";
+import express, { RequestHandler } from "express";
 import Controller from "./interfaces/controller";
 import User from "../models/User/interface";
 import UserModel from "../models/User/model";
@@ -19,15 +19,13 @@ class UserController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.post(this.path, validation(this.dto), this.createUser);
+    this.router.post(`${this.path}/register`, validation(this.dto), this.createUser);
     this.router.patch(
       `${this.path}/:id`,
       validation(this.dto, true),
       this.updateUser
     );
-    // dto 따로 안만들어도 되나?
     this.router.post(`${this.path}/login`, validation(this.dto, true), this.login);
-
   }
 
   private createUser: RequestHandler = async (req, res, next) => {
