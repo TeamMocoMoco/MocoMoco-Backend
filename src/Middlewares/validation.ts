@@ -13,7 +13,9 @@ function validationMiddleware(
     if (errors.length > 0) {
       const message = errors
         .map((error: ValidationError) => {
-          return error.constraints ? Object.values(error.constraints) : "";
+          return error.constraints
+            ? Object.values(error.constraints)
+            : "noting";
         })
         .join(", ");
       next(new Error(message));
