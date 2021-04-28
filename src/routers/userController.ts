@@ -92,7 +92,7 @@ class UserController implements Controller {
 
     const { success, msg, status } = await ncp.sendSMS({
       to: userData.phone,
-      content: "",
+      content: "안녕하세요. 팀 모코모코에서 인사드립니다. 좋은 개발되고 계신가요?",
       countryCode: "82",
     })
     console.log(success, msg, status)
