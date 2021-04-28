@@ -26,13 +26,22 @@ class UserController implements Controller {
       this.updateUser
     );
     // dto 따로 안만들어도 되나?
-    this.router.post(`${this.path}/login`, validation(this.dto), this.login);
+    this.router.post(`${this.path}/login`, validation(this.dto, true), this.login);
 
   }
 
   private createUser: RequestHandler = async (req, res, next) => {
     const userData: User = req.body;
-    const createUser = new this.user(userData);
+
+    const userById = await this.user.findOne({ id: userData.id })
+    if (userById)
+      next(new Error("이미 존재하는 아이디입니다"))
+    const userByPhone = await this.user.findOne({ phone: userData.phone })
+    if (userByPhone)
+      next(new Error("이미 존재하는 전화번호입니다"))
+
+    const hashedPassword = await bcrypt.hash(userData.password, 10)
+    const createUser = new this.user({ ...userData, password: hashedPassword });
     try {
       await createUser.save();
       res.send({ result: createUser });
@@ -62,7 +71,6 @@ class UserController implements Controller {
     }
   };
 
-  // 회원가입할떄 비밀번호 해쉬해주기, res.setHeader??
   private login: RequestHandler = async (req, res, next) => {
     const userLoginData: User = req.body;
     try {
@@ -73,7 +81,7 @@ class UserController implements Controller {
         const passwordMatch = await bcrypt.compare(userLoginData.password, user.password)
         if (!passwordMatch)
           next(new Error("비밀번호가 일치하지 않습니다"))
-        const secret = process.env.TOKEN_KEY
+        const secret = process.env.TOKEN_KEY || "test"
         const token = jwt.sign({ userId: user._id }, secret)
         res.send({ result: { user: { token: token } } })
       }
