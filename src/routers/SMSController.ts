@@ -3,7 +3,7 @@ import Controller from "./interfaces/controller"
 import SMS from "../models/SMS/interface"
 import SMSModel from "../models/SMS/model"
 import SMSDto from "../models/SMS/dto"
-import validation from "../middlewares/validation"
+import { validation } from "../middlewares/validation"
 import "dotenv/config"
 import { Types } from "mongoose"
 import bcrypt from "bcrypt"
@@ -27,8 +27,6 @@ class SMSController implements Controller {
 
   private sendSMS: RequestHandler = async (req, res, next) => {
     const userData: SMS = req.body
-
-
 
     const { success, msg, status } = await ncp.sendSMS({
       to: userData.phone,
