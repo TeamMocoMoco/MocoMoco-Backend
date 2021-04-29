@@ -30,6 +30,7 @@ class PostDto {
   @IsString()
   readonly category: string;
 
+  @ArrayMinSize(1)
   @IsString({ each: true })
   readonly hashtag: string[];
 

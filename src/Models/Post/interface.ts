@@ -9,7 +9,7 @@ interface Post extends Document {
   personnel: number;
   meeting: string;
   category: string;
-  hashtag?: string[];
+  hashtag: string[];
   location?: number[];
   startDate: Date;
   dueDate: Date;

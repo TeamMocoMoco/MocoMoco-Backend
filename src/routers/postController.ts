@@ -17,18 +17,21 @@ class PostController implements Controller {
   }
 
   private initializeRoutes() {
+    //게시글 작성
     this.router.post(
       this.path,
       JwtValidation,
       validation(this.dto),
       this.createPost
-    ); //게시글 작성
+    );
+    //게시글 수정
     this.router.patch(
       `${this.path}/:postId`,
       JwtValidation,
       validation(this.dto, true),
       this.updatePost
-    ); //게시글 수정
+    );
+
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
@@ -91,7 +94,7 @@ class PostController implements Controller {
     const userId = res.locals.user;
     const { postId } = req.params;
     if (!Types.ObjectId.isValid(postId))
-      next(new Error("오브젝트 아이다가 아닙니다."));
+      next(new Error("오브젝트 아이디가 아닙니다."));
 
     try {
       const post = await PostModel.findOneAndDelete().and([
@@ -106,12 +109,23 @@ class PostController implements Controller {
     }
   };
 
-  //게시글 전체보기
+  //게시글 전체보기 및 검색하기
   private getAllPosts: RequestHandler = async (req, res, next) => {
+    const keyword = req.query.keyword as string;
     try {
-      //모든 게시글 가져오기
-      const posts = await this.post.find({});
-      return res.send({ result: posts });
+      if (keyword) {
+        const posts = await this.post.find({
+          $or: [
+            { title: { $regex: keyword } },
+            { content: { $regex: keyword } },
+            { hashtag: { $regex: keyword } },
+          ],
+        });
+        return res.send({ result: posts });
+      } else {
+        const posts = await this.post.find({});
+        return res.send({ result: posts });
+      }
     } catch (err) {
       console.log(err);
       next(err);
