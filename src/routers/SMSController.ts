@@ -6,8 +6,6 @@ import SMSDto from "../models/SMS/dto"
 import validation from "../middlewares/validation"
 import "../middlewares/utile"
 import "dotenv/config"
-import { Types } from "mongoose"
-import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import ncp from "../middlewares/smsService"
 import { NCPClient } from "node-sens"
@@ -26,34 +24,38 @@ class SMSController implements Controller {
   private initializeRoutes() {
     this.router.post(`${this.path}/send`, validation(this.dto, true), this.send)
     this.router.post(`${this.path}/check`, validation(this.dto, true), this.check)
-    this.router.post(`${this.path}/verify`, validation(this.dto, true), this.verify)
   }
 
   private send: RequestHandler = async (req, res, next) => {
     const phoneData: SMS = req.body
 
-    const generateRand = rand(100000, 999999)
-    const { success, msg, status } = await ncp.sendSMS({
-      to: phoneData.phone,
-      content: `안녕하세요. 모코모코입니다. 휴대폰 인증번호는 ${generateRand}입니다. 좋은 하루 보내시기 바랍니다.`,
-      countryCode: "82",
-    })
-    console.log(success, msg, status)
-    const createSMS = new this.SMS({ ...phoneData, generateRand: generateRand })
     try {
-      await createSMS.save()
+      const generateRand = rand(100000, 999999)
+      const { success, msg, status } = await ncp.sendSMS({
+        to: phoneData.phone,
+        content: `안녕하세요. 모코모코입니다. 휴대폰 인증번호는 ${generateRand}입니다. 좋은 하루 보내시기 바랍니다.`,
+        countryCode: "82",
+      })
+      console.log(success, msg, status)
+      const createSMS = new this.SMS({ ...phoneData, generateRand: generateRand })
+      try {
+        await createSMS.save()
+        res.send({ result: true })
+      } catch (err) {
+        console.log(err)
+        next(err)
+      }
     } catch (err) {
       console.log(err)
       next(err)
     }
-    res.send({ result: true })
   }
 
   private check: RequestHandler = async (req, res, next) => {
     const checkData: SMS = req.body
 
     try {
-      const sms = await this.SMS.findOne({ phone: checkData.phone })
+      const sms = await this.SMS.findOne({ phone: checkData.phone }).sort("-updatedAt")
       if (!sms) next(new Error("인증하신 전화번호가 아닙니다"))
       if (sms) {
         if (sms.generateRand !== checkData.generateRand) next(new Error("인증번호가 잘못되었습니다"))
@@ -68,10 +70,6 @@ class SMSController implements Controller {
       console.log(err)
       next(err)
     }
-  }
-
-  private verify: RequestHandler = async (req, res, next) => {
-    const verifyData: SMS = req.body
   }
 }
 
