@@ -3,11 +3,12 @@ import Controller from "./interfaces/controller";
 import User from "../models/User/interface";
 import UserModel from "../models/User/model";
 import UserDto from "../models/User/dto";
-import { validation } from "../middlewares/validation";
+import { validation, JwtPhoneValidation } from "../middlewares/validation";
 import "dotenv/config";
 import { Types } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { truncate } from "node:fs";
 
 class UserController implements Controller {
   public path = "/auth";
@@ -22,30 +23,29 @@ class UserController implements Controller {
     this.router.post(
       `${this.path}/register`,
       validation(this.dto),
+      JwtPhoneValidation,
       this.createUser
     );
     this.router.patch(
       `${this.path}/:id`,
-      validation(this.dto, true),
+      validation(this.dto),
       this.updateUser
     );
-    this.router.post(
-      `${this.path}/login`,
-      validation(this.dto, true),
-      this.login
-    );
+    // this.router.post(
+    //   `${this.path}/login`,
+    //   validation(this.dto, true),
+    //   this.login
+    // );
   }
 
+  // "token": "eyJhbGciOiJIUzI1N"
   private createUser: RequestHandler = async (req, res, next) => {
     const userData: User = req.body;
+    const phoneData: User = res.locals.phone
 
-    const userById = await this.user.findOne({ id: userData.id });
-    if (userById) next(new Error("이미 존재하는 아이디입니다"));
-    const userByPhone = await this.user.findOne({ phone: userData.phone });
+    const userByPhone = await this.user.findOne({ phone: res.locals.phone });
     if (userByPhone) next(new Error("이미 존재하는 전화번호입니다"));
-
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const createUser = new this.user({ ...userData, password: hashedPassword });
+    const createUser = new this.user({ ...userData, phone: phoneData });
     try {
       await createUser.save();
       res.send({ result: createUser });
@@ -75,26 +75,26 @@ class UserController implements Controller {
     }
   };
 
-  private login: RequestHandler = async (req, res, next) => {
-    const userLoginData: User = req.body;
-    try {
-      const user = await this.user.findOne({ id: userLoginData.id });
-      if (!user) next(new Error("아이디 입력이 잘못되었습니다"));
-      if (user) {
-        const passwordMatch = await bcrypt.compare(
-          userLoginData.password,
-          user.password
-        );
-        if (!passwordMatch) next(new Error("비밀번호가 일치하지 않습니다"));
-        const secret = process.env.TOKEN_KEY || "token";
-        const token = jwt.sign({ userId: user._id }, secret);
-        res.send({ result: { user: { token: token } } });
-      }
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
-  };
+  // private login: RequestHandler = async (req, res, next) => {
+  //   const userLoginData: User = req.body;
+  //   try {
+  //     const user = await this.user.findOne({ id: userLoginData.id });
+  //     if (!user) next(new Error("아이디 입력이 잘못되었습니다"));
+  //     if (user) {
+  //       const passwordMatch = await bcrypt.compare(
+  //         userLoginData.password,
+  //         user.password
+  //       );
+  //       if (!passwordMatch) next(new Error("비밀번호가 일치하지 않습니다"));
+  //       const secret = process.env.TOKEN_KEY || "token";
+  //       const token = jwt.sign({ userId: user._id }, secret);
+  //       res.send({ result: { user: { token: token } } });
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     next(err);
+  //   }
+  // };
 }
 
 export default UserController;
