@@ -2,21 +2,18 @@ import express, { RequestHandler } from "express"
 import Controller from "./interfaces/controller"
 import User from "../models/User/interface"
 import UserModel from "../models/User/model"
-import validation from "../middlewares/validation"
 import UserDto from "../models/User/dto"
+import validation from "../middlewares/validation"
 import "dotenv/config"
 import { Types } from "mongoose"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import ncp from "../middlewares/smsService"
-import { NCPClient } from "node-sens"
 
 class UserController implements Controller {
   public path = "/auth"
   public router = express.Router()
   private user = UserModel
   private dto = UserDto
-  private NCP: NCPClient = ncp
   constructor() {
     this.initializeRoutes()
   }
@@ -25,7 +22,6 @@ class UserController implements Controller {
     this.router.post(`${this.path}/register`, validation(this.dto), this.createUser)
     this.router.patch(`${this.path}/:id`, validation(this.dto, true), this.updateUser)
     this.router.post(`${this.path}/login`, validation(this.dto, true), this.login)
-    this.router.post(`${this.path}/sendSMS`, validation(this.dto, true), this.sendSMS)
   }
 
   private createUser: RequestHandler = async (req, res, next) => {
@@ -82,18 +78,6 @@ class UserController implements Controller {
       console.log(err)
       next(err)
     }
-  }
-
-  private sendSMS: RequestHandler = async (req, res, next) => {
-    const userData: User = req.body
-
-    const { success, msg, status } = await ncp.sendSMS({
-      to: userData.phone,
-      content: "",
-      countryCode: "82",
-    })
-    console.log(success, msg, status)
-    res.send({ result: true })
   }
 }
 
