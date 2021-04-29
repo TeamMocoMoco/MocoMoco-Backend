@@ -4,12 +4,14 @@ import SMS from "../models/SMS/interface"
 import SMSModel from "../models/SMS/model"
 import SMSDto from "../models/SMS/dto"
 import validation from "../middlewares/validation"
+import "../middlewares/utile"
 import "dotenv/config"
 import { Types } from "mongoose"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import ncp from "../middlewares/smsService"
 import { NCPClient } from "node-sens"
+import { rand } from "../middlewares/utile"
 
 class SMSController implements Controller {
   public path = "/SMS"
@@ -28,17 +30,14 @@ class SMSController implements Controller {
   private sendSMS: RequestHandler = async (req, res, next) => {
     const userData: SMS = req.body
 
-
-
+    const generateRand = rand(100000, 999999)
     const { success, msg, status } = await ncp.sendSMS({
       to: userData.phone,
-      content: "안녕하세요. 팀 모코모코에서 인사드립니다. 좋은 개발되고 계신가요?",
+      content: `안녕하세요. 모코모코에서 보내드립니다. 휴대폰 인증번호는 ${generateRand}입니다. 좋은 하루 보내시기 바랍니다.`,
       countryCode: "82",
     })
     console.log(success, msg, status)
-
-    // 랜덤 숫자 생성후 generateRand변경
-    const createSMS = new this.SMS({ ...userData, generateRand: msg })
+    const createSMS = new this.SMS({ ...userData, generateRand: generateRand })
     try {
       await createSMS.save()
     } catch (err) {
@@ -47,6 +46,8 @@ class SMSController implements Controller {
     }
     res.send({ result: true })
   }
+
+
 }
 
 export default SMSController
