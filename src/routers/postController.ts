@@ -2,7 +2,7 @@ import express, { RequestHandler } from "express";
 import Controller from "./interfaces/controller";
 import Post from "../models/Post/interface";
 import PostModel from "../models/Post/model";
-import { validation } from "../middlewares/validation";
+import { validation, JwtValidation } from "../middlewares/validation";
 import PostDto from "../models/Post/dto";
 import "dotenv/config";
 import { Types } from "mongoose";
@@ -17,13 +17,19 @@ class PostController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.post(this.path, validation(this.dto), this.createPost); //게시글 작성
+    this.router.post(
+      this.path,
+      JwtValidation,
+      validation(this.dto),
+      this.createPost
+    ); //게시글 작성
     this.router.patch(
       `${this.path}/:postId`,
+      JwtValidation,
       validation(this.dto, true),
       this.updatePost
     ); //게시글 수정
-    this.router.delete(`${this.path}/:postId`, this.deletePost); //게시글 삭제
+    this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
   }
