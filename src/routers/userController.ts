@@ -48,7 +48,7 @@ class UserController implements Controller {
     const { id } = req.params
     if (!Types.ObjectId.isValid(id)) next(new Error("오브젝트 아이디가 아닙니다."))
     try {
-      const user = await UserModel.findByIdAndUpdate(
+      const user = await this.user.findByIdAndUpdate(
         id,
         {
           ...userUpdateData,
