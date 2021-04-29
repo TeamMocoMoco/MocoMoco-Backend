@@ -3,8 +3,7 @@ import Controller from "./interfaces/controller"
 import SMS from "../models/SMS/interface"
 import SMSModel from "../models/SMS/model"
 import SMSDto from "../models/SMS/dto"
-import validation from "../middlewares/validation"
-import "../middlewares/utile"
+import { validation } from "../middlewares/validation"
 import "dotenv/config"
 import jwt from "jsonwebtoken"
 import ncp from "../middlewares/smsService"
@@ -58,7 +57,8 @@ class SMSController implements Controller {
       const sms = await this.SMS.findOne({ phone: checkData.phone }).sort("-updatedAt")
       if (!sms) next(new Error("인증하신 전화번호가 아닙니다"))
       if (sms) {
-        if (sms.generateRand !== checkData.generateRand) next(new Error("인증번호가 잘못되었습니다"))
+        if (sms.generateRand !== checkData.generateRand)
+          next(new Error("인증번호가 잘못되었습니다"))
         if (sms.generateRand === checkData.generateRand) {
           const secret = process.env.TOKEN_KEY || "test"
           const token = jwt.sign({ phone: sms.phone }, secret)
