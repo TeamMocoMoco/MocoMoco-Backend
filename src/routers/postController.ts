@@ -21,20 +21,20 @@ class PostController implements Controller {
   private initializeRoutes() {
     this.router.post(this.path, validation(this.dto), this.createPost); //게시글 작성
     this.router.patch(
-      `${this.path}/:postId/:userId`,
+      `${this.path}/:postId`,
       validation(this.dto, true),
       this.updatePost
     ); //게시글 수정
-    this.router.delete(`${this.path}/:postId/:userId`, this.deletePost); //게시글 삭제
+    this.router.delete(`${this.path}/:postId`, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
   }
 
   //게시글 작성
   private createPost: RequestHandler = async (req, res, next) => {
-    //const userId = res.locals.user
+    const userId = res.locals.user;
     const postData: Post = req.body;
-    const createPost = new this.post({ ...postData });
+    const createPost = new this.post({ ...postData, user: userId });
     try {
       await createPost.save();
       res.send({ result: "success" });
@@ -60,10 +60,9 @@ class PostController implements Controller {
 
   //게시글 수정
   private updatePost: RequestHandler = async (req, res, next) => {
-    //const userId = res.locals.user
+    const userId = res.locals.user;
     const postUpdateData: Post = req.body;
     const { postId } = req.params;
-    const { userId } = req.params;
     if (!Types.ObjectId.isValid(postId))
       next(new Error("오브젝트 아이디가 아닙니다"));
     try {
@@ -85,8 +84,7 @@ class PostController implements Controller {
   };
   //게시글 삭제
   private deletePost: RequestHandler = async (req, res, next) => {
-    //const userId = res.locals.user
-    const { userId } = req.params;
+    const userId = res.locals.user;
     const { postId } = req.params;
     if (!Types.ObjectId.isValid(postId))
       next(new Error("오브젝트 아이다가 아닙니다."));
