@@ -33,8 +33,15 @@ class SMSController implements Controller {
   private check: RequestHandler = async (req, res, next) => {
     const checkData: SMS = req.body
     try {
-      const token = await this.smsService.check(checkData)
-      return res.send({ result: { phone: { token } } })
+      const checkResult = await this.smsService.check(checkData)
+      if (checkResult[0]) {
+        const token = await this.smsService.createToken(checkResult[1])
+        return res.send({ result: { phone: { token } } })
+      } else {
+        const token = await this.smsService.createToken(checkResult[1])
+        // 어느쪽 토큰이 발행되었는지 res에 표현 해야하나? 아니면 phone/user표시로 괜찮?
+        return res.send({ result: { user: { token } } })
+      }
     } catch (err) {
       console.log(err)
       next(err)
