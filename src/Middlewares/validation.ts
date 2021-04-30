@@ -49,13 +49,13 @@ export const JwtValidation: RequestHandler = async (req, res, next) => {
 }
 
 export const JwtPhoneValidation: RequestHandler = async (req, res, next) => {
-  const { token } = req.headers
-  if (!token || typeof token === "object") {
+  const { phonetoken } = req.headers
+  if (!phonetoken || typeof phonetoken === "object") {
     next(new Error("로그인 후 이용 가능한 기능입니다."))
     return
   }
   try {
-    const { phone } = jwt.verify(token, process.env.TOKEN_KEY || "token") as TokenData
+    const { phone } = jwt.verify(phonetoken, process.env.TOKEN_KEY || "token") as TokenData
     const sms = await SMSModel.findOne({ phone: phone }).sort("-updatedAt")
     if (!sms) {
       next(new Error("사용자가 없습니다."))
