@@ -3,7 +3,7 @@ import Controller from "./interfaces/controller";
 import User from "../models/User/interface";
 import UserModel from "../models/User/model";
 import UserDto from "../models/User/dto";
-import { validation, JwtPhoneValidation } from "../middlewares/validation";
+import { validation, JwtValidation, JwtPhoneValidation } from "../middlewares/validation";
 import "dotenv/config";
 import { Types } from "mongoose";
 import bcrypt from "bcrypt";
@@ -27,15 +27,17 @@ class UserController implements Controller {
       this.createUser
     );
     this.router.patch(
-      `${this.path}/:id`,
+      `${this.path}/user`,
       validation(this.dto),
+      JwtValidation,
       this.updateUser
     );
-    // this.router.post(
-    //   `${this.path}/login`,
-    //   validation(this.dto, true),
-    //   this.login
-    // );
+    this.router.post(
+      `${this.path}/login`,
+      validation(this.dto, true),
+      JwtPhoneValidation,
+      this.login
+    );
   }
 
   // "token": "eyJhbGciOiJIUzI1N"
@@ -56,13 +58,12 @@ class UserController implements Controller {
   };
 
   private updateUser: RequestHandler = async (req, res, next) => {
+    const userId: User = res.locals.user
     const userUpdateData: User = req.body;
-    const { id } = req.params;
-    if (!Types.ObjectId.isValid(id))
-      next(new Error("오브젝트 아이디가 아닙니다."));
+
     try {
       const user = await this.user.findByIdAndUpdate(
-        id,
+        userId,
         {
           ...userUpdateData,
         },
@@ -75,26 +76,21 @@ class UserController implements Controller {
     }
   };
 
-  // private login: RequestHandler = async (req, res, next) => {
-  //   const userLoginData: User = req.body;
-  //   try {
-  //     const user = await this.user.findOne({ id: userLoginData.id });
-  //     if (!user) next(new Error("아이디 입력이 잘못되었습니다"));
-  //     if (user) {
-  //       const passwordMatch = await bcrypt.compare(
-  //         userLoginData.password,
-  //         user.password
-  //       );
-  //       if (!passwordMatch) next(new Error("비밀번호가 일치하지 않습니다"));
-  //       const secret = process.env.TOKEN_KEY || "token";
-  //       const token = jwt.sign({ userId: user._id }, secret);
-  //       res.send({ result: { user: { token: token } } });
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //     next(err);
-  //   }
-  // };
+  private login: RequestHandler = async (req, res, next) => {
+    const phoneData: User = res.locals.phone
+
+    try {
+      const user = await this.user.findOne({ phone: res.locals.phone });
+      if (!user) next(new Error("없는 휴대폰 번호입니다"));
+      if (user) {
+        const token = jwt.sign({ userId: user._id }, process.env.TOKEN_KEY as string)
+        return res.send({ result: { user: { token: token } } })
+      }
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 export default UserController;
