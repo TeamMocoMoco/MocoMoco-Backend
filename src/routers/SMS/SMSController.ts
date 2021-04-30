@@ -3,7 +3,6 @@ import Controller from "../interfaces/controller"
 import { SMS, SMSDTO } from "../../models/SMS"
 import { validation } from "../../middlewares/validation"
 import SMSService from "./SMSService"
-import { isPhoneNumber } from "class-validator"
 
 class SMSController implements Controller {
   public path = "/SMS"
@@ -24,6 +23,7 @@ class SMSController implements Controller {
     const phoneData: SMS = req.body
     try {
       await this.smsService.send(phoneData)
+      res.send({ result: "success" })
     } catch (err) {
       console.log(err)
       next(err)

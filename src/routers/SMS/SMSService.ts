@@ -30,7 +30,6 @@ class SMSService {
       const sms = await this.smsModel.findOne({ phone: SMSData.phone }).sort("-updatedAt")
       if (!sms) throw new Error("인증하신 전화번호가 아닙니다")
       if (sms.generateRand !== SMSData.generateRand) throw new Error("인증번호가 잘못되었습니다")
-
       const secret = process.env.TOKEN_KEY as string
       const token = jwt.sign({ phone: sms.phone }, secret)
       return token
