@@ -4,6 +4,8 @@ import express, { RequestHandler } from "express"
 import jwt from "jsonwebtoken"
 import SMSModel from "../models/SMS/model"
 import UserModel from "../models/User/model"
+import "dotenv/config";
+
 
 interface TokenData {
   userId: string

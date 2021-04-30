@@ -1,6 +1,6 @@
 import "dotenv/config";
 import App from "./app";
-import UserController from "./routers/userController";
+import UserController from "./routers/User/userController";
 import PostController from "./routers/postController";
 import SMSController from "./routers/SMSController";
 const port = 3000;
