@@ -126,16 +126,16 @@ class PostController implements Controller {
           category,
           "온라인"
         );
-        res.send({ result: posts });
+        return res.send({ result: posts });
       } else if (category) {
         const posts = await this.postService.getPostsByCategory(
           category,
           "온라인"
         );
-        res.send({ result: posts });
+        return res.send({ result: posts });
       }
       const posts = await this.postService.getAllPosts();
-      res.send({ result: posts });
+      return res.send({ result: posts });
     } catch (err) {
       console.log(err);
       next(err);
@@ -154,16 +154,16 @@ class PostController implements Controller {
           category,
           "오프라인"
         );
-        res.send({ result: posts });
+        return res.send({ result: posts });
       } else if (category) {
         const posts = await this.postService.getPostsByCategory(
           category,
           "오프라인"
         );
-        res.send({ result: posts });
+        return res.send({ result: posts });
       }
       const posts = await this.postService.getAllPosts();
-      res.send({ result: posts });
+      return res.send({ result: posts });
     } catch (err) {
       console.log(err);
       next(err);

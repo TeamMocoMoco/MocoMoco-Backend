@@ -5,7 +5,7 @@ class PostService {
   constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
-    const newPost = new this.post({ ...postData, userId });
+    const newPost = new this.post({ ...postData, user: userId });
     try {
       await newPost.save();
       return newPost;
