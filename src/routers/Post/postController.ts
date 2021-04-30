@@ -1,19 +1,19 @@
 import express, { RequestHandler } from "express";
-import Controller from "./interfaces/controller";
-import Post from "../models/Post/interface";
-import PostModel from "../models/Post/model";
-import { validation, JwtValidation } from "../middlewares/validation";
-import PostDto from "../models/Post/dto";
+import Controller from "../interfaces/controller";
+import { Post, PostDto } from "../../models/Post";
+import { validation, JwtValidation } from "../../middlewares/validation";
+import PostService from "./postService";
 import "dotenv/config";
 import { Types } from "mongoose";
 
 class PostController implements Controller {
   public path = "/posts";
   public router = express.Router();
-  private post = PostModel;
+  private postService;
   private dto = PostDto;
   constructor() {
     this.initializeRoutes();
+    this.postService = new PostService();
   }
 
   private initializeRoutes() {
@@ -42,9 +42,9 @@ class PostController implements Controller {
   private createPost: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
     const postData: Post = req.body;
-    const createPost = new this.post({ ...postData, user: userId });
+
     try {
-      await createPost.save();
+      const newPost = await this.postService.createPost(postData, userId);
       res.send({ result: "success" });
     } catch (err) {
       console.log(err);
@@ -58,7 +58,7 @@ class PostController implements Controller {
     if (!Types.ObjectId.isValid(postId))
       next(new Error("오브젝트 아이디가 아닙니다."));
     try {
-      const post = await this.post.findById(postId);
+      const post = await this.postService.getPostById(postId);
       return res.send({ result: post });
     } catch (err) {
       console.log(err);
@@ -75,16 +75,8 @@ class PostController implements Controller {
       next(new Error("오브젝트 아이디가 아닙니다"));
     try {
       //해당 유저정보와 게시글 id로 찾고, 업데이트
-      const post = await this.post.findOneAndUpdate(
-        {
-          _id: postId,
-          user: userId,
-        },
-        { ...postUpdateData },
-        { new: true }
-      );
-      if (!post) next(new Error("작성하신 글이 존재하지 않습니다."));
-      return res.send({ result: post });
+      await this.postService.updatePost(postUpdateData, userId, postId);
+      return res.send({ result: "success" });
     } catch (err) {
       console.log(err);
       next(err);
@@ -98,11 +90,7 @@ class PostController implements Controller {
       next(new Error("오브젝트 아이디가 아닙니다."));
 
     try {
-      const post = await PostModel.findOneAndDelete().and([
-        { user: userId },
-        { _id: postId },
-      ]);
-      if (!post) next(new Error("작성하신 글이 존재하지 않습니다."));
+      await this.postService.deletePost(userId, postId);
       return res.send({ result: "success" });
     } catch (err) {
       console.log(err);
@@ -115,20 +103,11 @@ class PostController implements Controller {
     const keyword = req.query.keyword as string;
     try {
       if (keyword) {
-        const posts = await this.post
-          .find({
-            $or: [
-              { title: { $regex: keyword } },
-              { content: { $regex: keyword } },
-              { hashtag: { $regex: keyword } },
-            ],
-          })
-          .sort("-createdAt");
-        return res.send({ result: posts });
-      } else {
-        const posts = await this.post.find({}).sort("-createdAt");
+        const posts = await this.postService.getPostsByKeyword(keyword);
         return res.send({ result: posts });
       }
+      const posts = await this.postService.getAllPosts();
+      return res.send({ result: posts });
     } catch (err) {
       console.log(err);
       next(err);
@@ -142,75 +121,53 @@ class PostController implements Controller {
     try {
       //검색
       if (category && keyword) {
-        const posts = await this.post
-          .find()
-          .and([
-            { meeting: "온라인" },
-            { category: category },
-            {
-              $or: [
-                { title: { $regex: keyword } },
-                { content: { $regex: keyword } },
-                { hashtag: { $regex: keyword } },
-              ],
-            },
-          ])
-          .sort("-createdAt");
-        res.send({ result: posts });
+        const posts = await this.postService.getPostsByKeywordandCategory(
+          keyword,
+          category,
+          "온라인"
+        );
+        return res.send({ result: posts });
       } else if (category) {
-        const posts = await this.post
-          .find()
-          .and([{ meeting: "온라인" }, { category: category }])
-          .sort("-createdAt");
-        res.send({ result: posts });
-      } else {
-        const posts = await this.post.find({}).sort("-createdAt");
-        res.send({ result: posts });
+        const posts = await this.postService.getPostsByCategory(
+          category,
+          "온라인"
+        );
+        return res.send({ result: posts });
       }
+      const posts = await this.postService.getAllPosts();
+      return res.send({ result: posts });
     } catch (err) {
       console.log(err);
       next(err);
     }
   };
 
-  //게시글 온라인
+  //게시글 오프라인
   private getOfflinePosts: RequestHandler = async (req, res, next) => {
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
     try {
       //검색
       if (category && keyword) {
-        const posts = await this.post
-          .find()
-          .and([
-            { meeting: "오프라인" },
-            { category: category },
-            {
-              $or: [
-                { title: { $regex: keyword } },
-                { content: { $regex: keyword } },
-                { hashtag: { $regex: keyword } },
-              ],
-            },
-          ])
-          .sort("-createdAt");
-        res.send({ result: posts });
+        const posts = await this.postService.getPostsByKeywordandCategory(
+          keyword,
+          category,
+          "오프라인"
+        );
+        return res.send({ result: posts });
       } else if (category) {
-        const posts = await this.post
-          .find()
-          .and([{ meeting: "오프라인" }, { category: category }])
-          .sort("-createdAt");
-        res.send({ result: posts });
-      } else {
-        const posts = await this.post.find({}).sort("-createdAt");
-        res.send({ result: posts });
+        const posts = await this.postService.getPostsByCategory(
+          category,
+          "오프라인"
+        );
+        return res.send({ result: posts });
       }
+      const posts = await this.postService.getAllPosts();
+      return res.send({ result: posts });
     } catch (err) {
       console.log(err);
       next(err);
     }
   };
-
-  //마커는 자기 위치기반?
 }
 export default PostController;
