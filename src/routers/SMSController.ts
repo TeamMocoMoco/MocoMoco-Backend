@@ -62,8 +62,7 @@ class SMSController implements Controller {
         if (sms.generateRand === checkData.generateRand) {
           const secret = process.env.TOKEN_KEY || "test"
           const token = jwt.sign({ phone: sms.phone }, secret)
-          // result-user-token에서 user대신 다른 걸 넣어야할까?
-          res.send({ result: { user: { token: token } } })
+          res.send({ result: { phone: { token: token } } })
         }
       }
     } catch (err) {
