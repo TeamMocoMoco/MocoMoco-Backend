@@ -1,10 +1,9 @@
 import express, { RequestHandler } from "express"
 import Controller from "../interfaces/controller"
 import UserService from "./userService"
-import { User, UserModel, UserDTO } from "../../models/User"
+import { User, UserDTO } from "../../models/User"
 import { validation, JwtPhoneValidation } from "../../middlewares/validation"
 import { Types } from "mongoose"
-type userToken = [string, User]
 
 class UserController implements Controller {
   public path = "/auth"
@@ -25,7 +24,6 @@ class UserController implements Controller {
   private createUser: RequestHandler = async (req, res, next) => {
     const userData: User = req.body;
     const phoneData: string = res.locals.phone
-    console.log(phoneData)
     try {
       const user = await this.userService.createUser(userData, phoneData)
       return res.send({ result: user })
@@ -38,8 +36,6 @@ class UserController implements Controller {
   private login: RequestHandler = async (req, res, next) => {
     const phoneData: string = res.locals.phone
 
-    // const userLoginData: User = req.body
-    // console.log("userlogindata", req.body)
     try {
       const token: string = await this.userService.login(phoneData)
       return res.send({ result: { phone: { token: token } } })
