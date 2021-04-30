@@ -9,9 +9,6 @@ import {
 } from "class-validator";
 
 class PostDto {
-  @IsMongoId()
-  readonly user: string;
-
   @IsString()
   readonly position: string;
 
