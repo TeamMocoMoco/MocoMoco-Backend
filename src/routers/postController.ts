@@ -31,7 +31,8 @@ class PostController implements Controller {
       validation(this.dto, true),
       this.updatePost
     );
-
+    this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
+    this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
@@ -114,16 +115,18 @@ class PostController implements Controller {
     const keyword = req.query.keyword as string;
     try {
       if (keyword) {
-        const posts = await this.post.find({
-          $or: [
-            { title: { $regex: keyword } },
-            { content: { $regex: keyword } },
-            { hashtag: { $regex: keyword } },
-          ],
-        });
+        const posts = await this.post
+          .find({
+            $or: [
+              { title: { $regex: keyword } },
+              { content: { $regex: keyword } },
+              { hashtag: { $regex: keyword } },
+            ],
+          })
+          .sort("-createdAt");
         return res.send({ result: posts });
       } else {
-        const posts = await this.post.find({});
+        const posts = await this.post.find({}).sort("-createdAt");
         return res.send({ result: posts });
       }
     } catch (err) {
@@ -131,5 +134,83 @@ class PostController implements Controller {
       next(err);
     }
   };
+
+  //게시글 온라인
+  private getOnlinePosts: RequestHandler = async (req, res, next) => {
+    const category = req.query.category as string;
+    const keyword = req.query.keyword as string;
+    try {
+      //검색
+      if (category && keyword) {
+        const posts = await this.post
+          .find()
+          .and([
+            { meeting: "온라인" },
+            { category: category },
+            {
+              $or: [
+                { title: { $regex: keyword } },
+                { content: { $regex: keyword } },
+                { hashtag: { $regex: keyword } },
+              ],
+            },
+          ])
+          .sort("-createdAt");
+        res.send({ result: posts });
+      } else if (category) {
+        const posts = await this.post
+          .find()
+          .and([{ meeting: "온라인" }, { category: category }])
+          .sort("-createdAt");
+        res.send({ result: posts });
+      } else {
+        const posts = await this.post.find({}).sort("-createdAt");
+        res.send({ result: posts });
+      }
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
+  //게시글 온라인
+  private getOfflinePosts: RequestHandler = async (req, res, next) => {
+    const category = req.query.category as string;
+    const keyword = req.query.keyword as string;
+    try {
+      //검색
+      if (category && keyword) {
+        const posts = await this.post
+          .find()
+          .and([
+            { meeting: "오프라인" },
+            { category: category },
+            {
+              $or: [
+                { title: { $regex: keyword } },
+                { content: { $regex: keyword } },
+                { hashtag: { $regex: keyword } },
+              ],
+            },
+          ])
+          .sort("-createdAt");
+        res.send({ result: posts });
+      } else if (category) {
+        const posts = await this.post
+          .find()
+          .and([{ meeting: "오프라인" }, { category: category }])
+          .sort("-createdAt");
+        res.send({ result: posts });
+      } else {
+        const posts = await this.post.find({}).sort("-createdAt");
+        res.send({ result: posts });
+      }
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
+  //마커는 자기 위치기반?
 }
 export default PostController;
