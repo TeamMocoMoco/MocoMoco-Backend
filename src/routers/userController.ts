@@ -3,7 +3,7 @@ import Controller from "./interfaces/controller";
 import User from "../models/User/interface";
 import UserModel from "../models/User/model";
 import UserDto from "../models/User/dto";
-import { validation, JwtPhoneValidation } from "../middlewares/validation";
+import { validation, JwtValidation, JwtPhoneValidation } from "../middlewares/validation";
 import "dotenv/config";
 import { Types } from "mongoose";
 import bcrypt from "bcrypt";
@@ -27,8 +27,9 @@ class UserController implements Controller {
       this.createUser
     );
     this.router.patch(
-      `${this.path}/:id`,
+      `${this.path}/user`,
       validation(this.dto),
+      JwtValidation,
       this.updateUser
     );
     this.router.post(
@@ -57,13 +58,12 @@ class UserController implements Controller {
   };
 
   private updateUser: RequestHandler = async (req, res, next) => {
+    const userId: User = res.locals.user
     const userUpdateData: User = req.body;
-    const { id } = req.params;
-    if (!Types.ObjectId.isValid(id))
-      next(new Error("오브젝트 아이디가 아닙니다."));
+
     try {
       const user = await this.user.findByIdAndUpdate(
-        id,
+        userId,
         {
           ...userUpdateData,
         },
