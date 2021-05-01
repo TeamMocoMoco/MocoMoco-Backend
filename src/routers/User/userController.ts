@@ -38,7 +38,7 @@ class UserController implements Controller {
 
     try {
       const token: string = await this.userService.login(phoneData)
-      return res.send({ result: { phone: { token: token } } })
+      return res.send({ result: { user: { token: token } } })
     } catch (err) {
       console.log(err)
       next(err)
