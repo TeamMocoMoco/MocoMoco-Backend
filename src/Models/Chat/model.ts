@@ -1,0 +1,16 @@
+import { Schema, model, Model, Types } from "mongoose"
+import Chat from "./interface"
+
+const ChatSchema = new Schema(
+  {
+    user: { type: Types.ObjectId, ref: "user", required: true },
+    roomID: { type: String, ref: "room", required: true },
+    content: { type: String },
+  },
+  {
+    timestamps: true,
+  }
+)
+
+const PostModel: Model<Chat> = model("chat", ChatSchema)
+export default PostModel
