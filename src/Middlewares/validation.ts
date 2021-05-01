@@ -59,9 +59,10 @@ export const JwtPhoneValidation: RequestHandler = async (req, res, next) => {
     const sms = await SMSModel.findOne({ phone: phone }).sort("-updatedAt")
     if (!sms) {
       next(new Error("사용자가 없습니다."))
+    } else {
+      res.locals.phone = sms.phone
+      next()
     }
-    res.locals.phone = phone
-    next()
   } catch (err) {
     next(new Error("로그인 후 이용 가능한 기능입니다."))
   }

@@ -33,8 +33,13 @@ class SMSController implements Controller {
   private check: RequestHandler = async (req, res, next) => {
     const checkData: SMS = req.body
     try {
-      const token = await this.smsService.check(checkData)
-      return res.send({ result: { phone: { token } } })
+      const checkResult = await this.smsService.check(checkData)
+      const token = await this.smsService.createToken(checkResult[1])
+      if (checkResult[0]) {
+        return res.send({ result: { phone: { token } } })
+      } else {
+        return res.send({ result: { user: { token } } })
+      }
     } catch (err) {
       console.log(err)
       next(err)

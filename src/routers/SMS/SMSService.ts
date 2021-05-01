@@ -1,12 +1,17 @@
 import { SMS, SMSModel, SMSDTO } from "../../models/SMS";
+import { UserModel } from "../../models/User";
 import NCP from "../../middlewares/smsService";
 import { NCPClient } from "node-sens";
 import jwt from "jsonwebtoken";
 import { rand } from "../../middlewares/utile";
+
+type boolTokenSource = [boolean, string]
+
 class SMSService {
   private smsModel = SMSModel;
+  private userModel = UserModel;
   private ncp: NCPClient = NCP;
-  constructor() {}
+  constructor() { }
 
   send = async (SMSData: SMS): Promise<void> => {
     try {
@@ -28,7 +33,8 @@ class SMSService {
       throw new Error(err);
     }
   };
-  check = async (SMSData: SMS): Promise<string> => {
+
+  check = async (SMSData: SMS): Promise<boolTokenSource> => {
     try {
       const sms = await this.smsModel
         .findOne({ phone: SMSData.phone })
@@ -36,13 +42,25 @@ class SMSService {
       if (!sms) throw new Error("인증하신 전화번호가 아닙니다");
       if (sms.generateRand !== SMSData.generateRand)
         throw new Error("인증번호가 잘못되었습니다");
-      const secret = process.env.TOKEN_KEY as string;
-      const token = jwt.sign({ phone: sms.phone }, secret);
-      return token;
+
+      const user = await this.userModel.findOne({ phone: SMSData.phone })
+      if (user)
+        return [false, user._id]
+      return [true, sms.phone];
     } catch (err) {
       throw new Error(err);
     }
-  };
+  }
+
+  createToken = async (tokenSource: string): Promise<string> => {
+    try {
+      const secret = process.env.TOKEN_KEY as string;
+      const token = jwt.sign({ id: tokenSource }, secret);
+      return token
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
 }
 
 export default SMSService;
