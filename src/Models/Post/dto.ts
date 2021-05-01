@@ -1,6 +1,5 @@
 import {
   IsString,
-  IsMongoId,
   IsInt,
   IsNumber,
   IsDateString,
@@ -33,7 +32,6 @@ class PostDto {
 
   @IsNumber({}, { each: true })
   @ArrayMaxSize(2)
-  @ArrayMinSize(2)
   readonly location: number[];
 
   @IsDateString()
