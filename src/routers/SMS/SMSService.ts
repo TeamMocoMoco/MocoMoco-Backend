@@ -55,8 +55,7 @@ class SMSService {
     try {
       const secret = process.env.TOKEN_KEY as string;
       const token = jwt.sign({ userId: tokenSource }, secret);
-      console.log(token);
-      return token;
+      return token
     } catch (err) {
       throw new Error(err);
     }
