@@ -2,7 +2,7 @@ import express, { RequestHandler } from "express"
 import Controller from "../interfaces/controller"
 import UserService from "./userService"
 import { User, UserDTO } from "../../models/User"
-import { validation, JwtPhoneValidation } from "../../middlewares/validation"
+import { validation, JwtPhoneValidation, JwtValidation } from "../../middlewares/validation"
 import { Types } from "mongoose"
 
 class UserController implements Controller {
@@ -18,7 +18,8 @@ class UserController implements Controller {
   private initializeRoutes() {
     this.router.post(`${this.path}/register`, validation(this.dto), JwtPhoneValidation, this.createUser)
     this.router.post(`${this.path}/login`, validation(this.dto, true), this.login)
-    this.router.patch(`${this.path}/:id`, validation(this.dto, true), this.updateUser)
+    this.router.patch(`${this.path}/:id`, validation(this.dto, true), JwtValidation, this.updateUser)
+    this.router.get(`${this.path}/:id`, validation(this.dto, true), JwtValidation, this.mypage)
   }
 
   private createUser: RequestHandler = async (req, res, next) => {
@@ -46,7 +47,7 @@ class UserController implements Controller {
   }
 
   private updateUser: RequestHandler = async (req, res, next) => {
-    const userId: string = res.locals.user
+    const userId = res.locals.user
     const userUpdateData: User = req.body;
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
@@ -56,6 +57,20 @@ class UserController implements Controller {
     } catch (err) {
       console.log(err)
       next(err)
+    }
+  }
+
+  private mypage: RequestHandler = async (req, res, next) => {
+    const userId = res.locals.user;
+    if (!Types.ObjectId.isValid(userId))
+      next(new Error("오브젝트 아이디가 아닙니다"));
+
+    try {
+      const { user, posts } = await this.userService.getMyPage(userId)
+      return res.send({ result: { user: user, posts: posts } });
+    } catch (err) {
+      console.log(err);
+      next(err);
     }
   }
 }
