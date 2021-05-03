@@ -1,8 +1,10 @@
 import { Post, PostModel } from "../../models/Post";
+import { Room, RoomModel } from "../../models/Room";
 type Meeting = "온라인" | "오프라인";
 class PostService {
   private post = PostModel;
-  constructor() { }
+  private room = RoomModel;
+  constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -130,18 +132,28 @@ class PostService {
     eBound: number
   ): Promise<Post[]> => {
     try {
-      const posts = await this.post
-        .find({
-          $and: [
-            { "location.0": { $gt: sBound, $lt: nBound } },
-            { "location.1": { $gt: wBound, $lt: eBound } }
-          ]
-        })
-      return posts
+      const posts = await this.post.find({
+        $and: [
+          { "location.0": { $gt: sBound, $lt: nBound } },
+          { "location.1": { $gt: wBound, $lt: eBound } },
+        ],
+      });
+      return posts;
     } catch (err) {
-      throw new Error(err)
+      throw new Error(err);
     }
-  }
+  };
+
+  // addParticipant = async (
+  //   roomId: string,
+  //   userId: string,
+  //   participantsId: string
+  // ): Promise<void> => {
+  //   try{
+  //     const room = await this.room.findById(roomId)
+  //     if (!room) throw new Error("오브젝트 아이디의")
+  //   }
+  // };
 }
 
 export default PostService;
