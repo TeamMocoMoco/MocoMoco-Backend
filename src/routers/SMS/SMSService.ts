@@ -5,13 +5,13 @@ import { NCPClient } from "node-sens";
 import jwt from "jsonwebtoken";
 import { rand } from "../../middlewares/utile";
 
-type boolTokenSource = [boolean, string]
+type boolTokenSource = [boolean, string];
 
 class SMSService {
   private smsModel = SMSModel;
   private userModel = UserModel;
   private ncp: NCPClient = NCP;
-  constructor() { }
+  constructor() {}
 
   send = async (SMSData: SMS): Promise<void> => {
     try {
@@ -43,24 +43,23 @@ class SMSService {
       if (sms.generateRand !== SMSData.generateRand)
         throw new Error("인증번호가 잘못되었습니다");
 
-      const user = await this.userModel.findOne({ phone: SMSData.phone })
-      if (user)
-        return [false, user._id]
+      const user = await this.userModel.findOne({ phone: SMSData.phone });
+      if (user) return [false, user._id];
       return [true, sms.phone];
     } catch (err) {
       throw new Error(err);
     }
-  }
+  };
 
   createToken = async (tokenSource: string): Promise<string> => {
     try {
       const secret = process.env.TOKEN_KEY as string;
-      const token = jwt.sign({ id: tokenSource }, secret);
+      const token = jwt.sign({ userId: tokenSource }, secret);
       return token
     } catch (err) {
-      throw new Error(err)
+      throw new Error(err);
     }
-  }
+  };
 }
 
 export default SMSService;
