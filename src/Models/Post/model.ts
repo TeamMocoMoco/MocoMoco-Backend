@@ -15,6 +15,7 @@ const PostSchema = new Schema(
     location: [Number],
     startDate: { type: Date },
     dueDate: { type: Date },
+    participants: { type: [{ type: Types.ObjectId, ref: "user" }] },
   },
   {
     timestamps: true,
