@@ -51,7 +51,8 @@ class RoomService {
         .find({
           $or: [{ admin: userId }, { participant: userId }],
         })
-        .populate("participant name userImg");
+        .populate("participant name userImg")
+        .populate("admin name userImg");
       return rooms;
     } catch (err) {
       throw new Error(err);
