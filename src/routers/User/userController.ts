@@ -4,6 +4,7 @@ import UserService from "./userService"
 import { User, UserDTO } from "../../models/User"
 import { validation, JwtPhoneValidation } from "../../middlewares/validation"
 import { Types } from "mongoose"
+import upload from "../../middlewares/upload"
 
 class UserController implements Controller {
   public path = "/auth"
@@ -18,7 +19,7 @@ class UserController implements Controller {
   private initializeRoutes() {
     this.router.post(`${this.path}/register`, validation(this.dto), JwtPhoneValidation, this.createUser)
     this.router.post(`${this.path}/login`, validation(this.dto, true), this.login)
-    this.router.patch(`${this.path}/:id`, validation(this.dto, true), this.updateUser)
+    this.router.patch(`${this.path}/:id`, validation(this.dto, true), upload.single('img'),this.updateUser)
   }
 
   private createUser: RequestHandler = async (req, res, next) => {
@@ -48,10 +49,11 @@ class UserController implements Controller {
   private updateUser: RequestHandler = async (req, res, next) => {
     const userId: string = res.locals.user
     const userUpdateData: User = req.body;
+    const imgUrl = req.file && req.file.filename
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
     try {
-      const user = await this.userService.updateUser(userUpdateData, userId)
+      const user = await this.userService.updateUser({...userUpdateData,userImg:imgUrl}, userId)
       return res.send({ result: user })
     } catch (err) {
       console.log(err)
