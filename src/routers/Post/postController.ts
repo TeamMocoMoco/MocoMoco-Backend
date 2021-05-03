@@ -177,22 +177,24 @@ class PostController implements Controller {
   };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
-    // const bounds = req.query.bounds as string
-    // bounds를 4개 숫자로 만들기 동 서 남 북
-    // lat은 남북 높을수록 북쪽
-    // lng은 동서 높을수록 동쪽 한국기준
-    const sBound = 10;
-    const nBound = 20;
-    const wBound = 10;
-    const eBound = 20;
+    // const bound = req.query.bound as string
     try {
-      const posts = await this.postService.getPostsInMap(
-        sBound,
-        nBound,
-        wBound,
-        eBound
-      );
-      return res.send({ result: posts });
+      // const bounds = await this.postService.getBounds(bound)
+      // const sBound = bounds[0][0]
+      // const nBound = bounds[1][0]
+      // const wBound = bounds[0][1]
+      // const eBound = bounds[1][1]
+
+      // const bounds = req.query.bounds as string
+      // bounds를 4개 숫자로 만들기 동 서 남 북
+      // lat은 남북 높을수록 북쪽
+      // lng은 동서 높을수록 동쪽 한국기준
+      const sBound = 10
+      const nBound = 20
+      const wBound = 10
+      const eBound = 20
+      const posts = await this.postService.getPostsInMap(sBound, nBound, wBound, eBound)
+      return res.send({ result: posts })
     } catch (err) {
       console.log(err);
       next(err);
