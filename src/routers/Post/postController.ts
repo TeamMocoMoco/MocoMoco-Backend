@@ -172,7 +172,7 @@ class PostController implements Controller {
   };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
-    const bound = req.query.bound as string
+    // const bound = req.query.bound as string
     try {
       // const bounds = await this.postService.getBounds(bound)
       // const sBound = bounds[0][0]
