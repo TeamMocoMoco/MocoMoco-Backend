@@ -1,8 +1,8 @@
 import express, { RequestHandler } from "express";
 import Controller from "../interfaces/controller";
-import { Chat, ChatDto } from "../../models/Chat";
-import { Room, RoomDto } from "../../models/Room";
-import { validation, JwtValidation } from "../../middlewares/validation";
+import { Chat } from "../../models/Chat";
+import { Room } from "../../models/Room";
+import { JwtValidation } from "../../middlewares/validation";
 import ChatService from "./chatService";
 import RoomService from "./roomService";
 import { Types } from "mongoose";

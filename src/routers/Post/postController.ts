@@ -34,6 +34,11 @@ class PostController implements Controller {
     this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/map`, this.getPostsInMap);
+    this.router.patch(
+      `${this.path}/:postId/participants`,
+      JwtValidation,
+      this.addParticipant
+    );
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
@@ -190,6 +195,21 @@ class PostController implements Controller {
       const eBound = 20
       const posts = await this.postService.getPostsInMap(sBound, nBound, wBound, eBound)
       return res.send({ result: posts })
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
+  private addParticipant: RequestHandler = async (req, res, next) => {
+    const { postId } = req.params;
+    const userId = res.locals.user;
+    const { participantId } = req.body;
+    try {
+      if (!Types.ObjectId.isValid(postId))
+        next(new Error("오브젝트 아이디가 아닙니다"));
+      await this.postService.addParticipant(postId, userId, participantId);
+      return res.send({ result: "성공적으로 추가했습니다!" });
     } catch (err) {
       console.log(err);
       next(err);
