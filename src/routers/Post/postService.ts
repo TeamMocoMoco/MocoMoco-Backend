@@ -2,7 +2,7 @@ import { Post, PostModel } from "../../models/Post";
 type Meeting = "온라인" | "오프라인";
 class PostService {
   private post = PostModel;
-  constructor() {}
+  constructor() { }
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -122,6 +122,26 @@ class PostService {
       throw new Error(err);
     }
   };
+
+  getPostsInMap = async (
+    sBound: number,
+    nBound: number,
+    wBound: number,
+    eBound: number
+  ): Promise<Post[]> => {
+    try {
+      const posts = await this.post
+        .find({
+          $and: [
+            { "location.0": { $gt: sBound, $lt: nBound } },
+            { "location.1": { $gt: wBound, $lt: eBound } }
+          ]
+        })
+      return posts
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
 }
 
 export default PostService;

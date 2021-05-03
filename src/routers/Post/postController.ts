@@ -33,6 +33,7 @@ class PostController implements Controller {
     );
     this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
+    this.router.get(`${this.path}/map`, this.getPostsInMap)
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
@@ -169,5 +170,23 @@ class PostController implements Controller {
       next(err);
     }
   };
+
+  private getPostsInMap: RequestHandler = async (req, res, next) => {
+    // const bounds = req.query.bounds as string
+    // bounds를 4개 숫자로 만들기 동 서 남 북
+    // lat은 남북 높을수록 북쪽
+    // lng은 동서 높을수록 동쪽 한국기준
+    const sBound = 10
+    const nBound = 20
+    const wBound = 10
+    const eBound = 20
+    try {
+      const posts = await this.postService.getPostsInMap(sBound, nBound, wBound, eBound)
+      return res.send({ result: posts })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  }
 }
 export default PostController;
