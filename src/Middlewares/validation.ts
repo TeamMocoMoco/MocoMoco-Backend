@@ -6,8 +6,8 @@ import SMSModel from "../models/SMS/model"
 import UserModel from "../models/User/model"
 
 interface TokenData {
-  userId: string
-  phone: string
+  userId?: string
+  phone?: string
 }
 
 export function validation(type: any, skipMissingProperties = false): express.RequestHandler {
