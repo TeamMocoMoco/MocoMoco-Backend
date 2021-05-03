@@ -55,7 +55,7 @@ class SMSService {
   createToken = async (tokenSource: string): Promise<string> => {
     try {
       const secret = process.env.TOKEN_KEY as string;
-      const token = jwt.sign({ id: tokenSource }, secret);
+      const token = jwt.sign({ userId: tokenSource }, secret);
       return token
     } catch (err) {
       throw new Error(err)
