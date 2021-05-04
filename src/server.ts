@@ -4,6 +4,10 @@ import UserController from "./routers/User/userController";
 import PostController from "./routers/Post/postController";
 import SMSController from "./routers/SMS/SMSController";
 import ChatController from "./routers/Chat/chatController";
+import * as http from 'http'
+import ChatServer from "./socket"
+
+
 const port = 3000;
 
 const app = new App([
@@ -12,6 +16,10 @@ const app = new App([
   new SMSController(),
   new ChatController(),
 ]).app;
-app.listen(port, function () {
+
+const server = http.createServer(app);
+const chatServer = new ChatServer(server,app)
+
+server.listen(port, function () {
   console.log("Express listening on port", port);
 });
