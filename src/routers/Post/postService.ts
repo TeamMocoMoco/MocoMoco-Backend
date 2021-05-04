@@ -53,7 +53,10 @@ class PostService {
 
   getPostById = async (postId: string): Promise<Post | null> => {
     try {
-      const post = await this.post.findById(postId);
+      const post = await this.post
+        .findById(postId)
+        .populate("user", "name role userImg")
+        .populate("participants", "name role userImg");
       return post;
     } catch (err) {
       throw new Error(err);
@@ -62,7 +65,10 @@ class PostService {
 
   getAllPosts = async (): Promise<Post[]> => {
     try {
-      const posts = await this.post.find({}).sort("-createdAt");
+      const posts = await this.post
+        .find({ status: true })
+        .populate("participants", "name role userImg")
+        .sort("-createdAt");
       return posts;
     } catch (err) {
       throw new Error(err);
