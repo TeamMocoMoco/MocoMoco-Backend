@@ -1,10 +1,9 @@
 import { Post, PostModel } from "../../models/Post";
-import { Room, RoomModel } from "../../models/Room";
 import { User, UserModel } from "../../models/User";
 type Meeting = "온라인" | "오프라인";
+const userInfo = "name role userImg";
 class PostService {
   private post = PostModel;
-  private room = RoomModel;
   private user = UserModel;
   constructor() {}
 
@@ -53,7 +52,10 @@ class PostService {
 
   getPostById = async (postId: string): Promise<Post | null> => {
     try {
-      const post = await this.post.findById(postId);
+      const post = await this.post
+        .findById(postId)
+        .populate("user", userInfo)
+        .populate("participants", userInfo);
       return post;
     } catch (err) {
       throw new Error(err);
@@ -62,7 +64,10 @@ class PostService {
 
   getAllPosts = async (): Promise<Post[]> => {
     try {
-      const posts = await this.post.find({}).sort("-createdAt");
+      const posts = await this.post
+        .find({ status: true })
+        .populate("participants", userInfo)
+        .sort("-createdAt");
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -78,7 +83,9 @@ class PostService {
             { content: { $regex: keyword } },
             { hashtag: { $regex: keyword } },
           ],
+          status: true,
         })
+        .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
     } catch (err) {
@@ -97,6 +104,7 @@ class PostService {
         .and([
           { meeting },
           { category },
+          { status: true },
           {
             $or: [
               { title: { $regex: keyword } },
@@ -105,6 +113,7 @@ class PostService {
             ],
           },
         ])
+        .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
     } catch (err) {
@@ -119,7 +128,8 @@ class PostService {
     try {
       const posts = await this.post
         .find()
-        .and([{ meeting }, { category: category }])
+        .and([{ meeting }, { category: category }, { status: true }])
+        .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
     } catch (err) {
@@ -162,7 +172,7 @@ class PostService {
         throw new Error("본인은 참가자로 넣을 수 없습니다.");
       if (post.participants.includes(participant._id))
         throw new Error("이미 참가 확정된 팀원입니다.");
-      if (post.participants.length >= post.personnel - 1)
+      if (post.participants.length >= post.personnel)
         throw new Error("참여인원이 초과했습니다.");
       //참여인원에 추가하기
       await this.post.findByIdAndUpdate(
