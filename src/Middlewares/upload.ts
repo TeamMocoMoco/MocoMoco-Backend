@@ -26,7 +26,7 @@ const serverStorage = multer.diskStorage({
 })
 
 
-const upload = multer({
+const upload= multer({
   storage: S3storage,
 })
 
