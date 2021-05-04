@@ -183,6 +183,16 @@ class PostService {
       throw new Error(err);
     }
   };
+
+  //스케쥴링
+  changeStatus = async (): Promise<void> => {
+    const date = Date.now();
+    console.log(new Date(date));
+    await this.post.updateMany(
+      { startDate: { $lte: new Date(date) } },
+      { $set: { status: false } }
+    );
+  };
 }
 
 export default PostService;
