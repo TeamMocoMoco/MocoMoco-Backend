@@ -16,6 +16,7 @@ interface Post extends Document {
   createdAt: Date;
   updatedAt: Date;
   participants: string[];
+  status: boolean;
 }
 
 export default Post;
