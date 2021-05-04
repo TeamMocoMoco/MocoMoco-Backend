@@ -35,17 +35,8 @@ class RoomService {
       throw new Error(err);
     }
   };
-  checkRoomById = async (roomId: string): Promise<boolean> => {
-    try {
-      const room = await this.room.findById(roomId);
-      if (room) return true;
-      return false;
-    } catch (err) {
-      throw new Error(err);
-    }
-  };
 
-  getMyRooms = async (userId: string): Promise<Room[]> => {
+  getRooms = async (userId: string): Promise<Room[]> => {
     try {
       const rooms = await this.room
         .find({
@@ -54,6 +45,17 @@ class RoomService {
         .populate("participant name userImg")
         .populate("admin name userImg");
       return rooms;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  getRoomById = async (roomId: string): Promise<Room | null> => {
+    try {
+      const room = await this.room
+        .findById(roomId)
+        .populate("participant name userImg");
+      return room;
     } catch (err) {
       throw new Error(err);
     }

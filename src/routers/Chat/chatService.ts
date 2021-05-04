@@ -2,7 +2,7 @@ import { Chat, ChatModel } from "../../models/Chat";
 export default class ChatService {
   private chatModel = ChatModel;
   constructor() {}
-  getContents = async (roomId: string): Promise<Chat[]> => {
+  getChatById = async (roomId: string): Promise<Chat[]> => {
     try {
       const contents = await this.chatModel.find({ roomId });
       return contents;
