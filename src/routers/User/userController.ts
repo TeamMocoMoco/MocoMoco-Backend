@@ -21,7 +21,7 @@ class UserController implements Controller {
     this.router.post(`${this.path}/register`, validation(this.dto), JwtPhoneValidation, this.createUser)
     this.router.post(`${this.path}/login`, validation(this.dto, true), this.login)
     this.router.patch(`${this.path}/:id`, validation(this.dto, true), JwtValidation, upload.single('img'), this.updateUser)
-    this.router.get(`${this.path}/:id`, validation(this.dto, true), JwtValidation, this.mypage)
+    this.router.get(`${this.path}/:id`, validation(this.dto, true), JwtValidation, this.getMyPage)
 
   }
 
@@ -65,7 +65,7 @@ class UserController implements Controller {
     }
   }
 
-  private mypage: RequestHandler = async (req, res, next) => {
+  private getMyPage: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
     if (!Types.ObjectId.isValid(userId))
       next(new Error("오브젝트 아이디가 아닙니다"));
