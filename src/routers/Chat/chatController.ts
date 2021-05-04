@@ -70,7 +70,7 @@ class ChatController implements Controller {
       const chat = await this.chatService.creatChat(chatData, userId, roomId);
 
       // 여기서 소켓을 통해서 보낸다.
-      // io.~~~~~~
+      // req.app.get('io').of('/room').to(req.params.id).emit('chat', chat);
       return res.send({ result: "success" });
     } catch (err) {
       console.log(err);
