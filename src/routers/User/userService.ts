@@ -1,8 +1,10 @@
 import { User, UserModel } from "../../models/User/"
+import { Post, PostModel } from "../../models/Post/"
 import jwt from "jsonwebtoken"
 
 class UserService {
   private userModel = UserModel
+  private postModel = PostModel
   constructor() { }
 
   createUser = async (userData: User, phoneData: string): Promise<User> => {
@@ -40,6 +42,26 @@ class UserService {
         { new: true }
       );
       return user
+    } catch (err) {
+      console.log(err)
+      throw new Error(err)
+    }
+  }
+
+  getMyPage = async (userId: string): Promise<{ user: User, posts: Post[] }> => {
+    try {
+      const user = await this.userModel.findById(userId)
+      if (!user) throw new Error("없는 유저입니다")
+
+      const posts = await this.postModel
+        .find({
+          $or: [
+            { user: user._id },
+            { participants: user._id },
+          ]
+        })
+        .sort("-createdAt")
+      return { user, posts }
     } catch (err) {
       console.log(err)
       throw new Error(err)

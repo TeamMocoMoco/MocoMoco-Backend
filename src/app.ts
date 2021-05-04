@@ -50,7 +50,7 @@ class App {
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
         console.log(err);
-        res.status(500).send({ err: err.message });
+        res.status(500).send({ err: err.message.slice(7) });
       }
     );
   }
