@@ -1,7 +1,6 @@
 import { User, UserModel } from "../../models/User/"
 import { Post, PostModel } from "../../models/Post/"
 import jwt from "jsonwebtoken"
-import { truncate } from "node:fs"
 
 class UserService {
   private userModel = UserModel
