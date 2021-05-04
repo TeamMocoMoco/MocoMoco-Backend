@@ -16,11 +16,14 @@ const PostSchema = new Schema(
     startDate: { type: Date },
     dueDate: { type: Date },
     participants: { type: [{ type: Types.ObjectId, ref: "user" }] },
+    status: { type: Boolean, default: true },
   },
   {
     timestamps: true,
   }
 );
+
+PostSchema.index({ status: 1, meeting: 1 })
 
 const PostModel: Model<Post> = model("post", PostSchema);
 export default PostModel;
