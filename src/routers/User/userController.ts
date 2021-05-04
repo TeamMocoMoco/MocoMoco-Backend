@@ -65,12 +65,10 @@ class UserController implements Controller {
     }
   }
 
-  // status 생긴뒤에 다시 테스트 필요
   private mypage: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
     if (!Types.ObjectId.isValid(userId))
       next(new Error("오브젝트 아이디가 아닙니다"));
-
     try {
       const { user, userPost, userActivePost, participantsPost, participantsActivePost } = await this.userService.getMyPage(userId)
       return res.send({ result: { user: user, userPost: userPost, userActivePost: userActivePost, participantsPost: participantsPost, participantsActivePost: participantsActivePost } });
