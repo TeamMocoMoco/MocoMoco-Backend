@@ -1,27 +1,25 @@
 import mongoose from "mongoose";
-import {dropAllCollections,removeAllCollections} from "../test-setup"
-import PostService from '../../routers/Post/postService'
-import {PostModel,PostDto,Post} from '../../models/Post'
-import {UserModel,UserDTO,User} from '../../models/User'
-const databaseName ="test"
+import { dropAllCollections, removeAllCollections } from "../test-setup";
+import PostService from "../../routers/Post/postService";
+import { PostModel, PostDto, Post } from "../../models/Post";
+import { UserModel, UserDTO, User } from "../../models/User";
+const databaseName = "test";
 
-beforeAll(async()=>{
-    const url = `mongodb://127.0.0.1/${databaseName}`
-    await mongoose.connect(url, { useNewUrlParser: true })
-})
+beforeAll(async () => {
+  const url = `mongodb://127.0.0.1/${databaseName}`;
+  await mongoose.connect(url, { useNewUrlParser: true });
+});
 
-describe("post test",()=>{
-    const postService = new PostService()
-    test(("post create test"),()=>{
-    })
-})
+describe("post test", () => {
+  const postService = new PostService();
+  test("post create test", () => {});
+});
 
+afterEach(async () => {
+  await removeAllCollections();
+});
 
-afterEach(async()=>{
-    await removeAllCollections()
-})
-
-afterAll(async()=>{
-    await mongoose.connection.close()
-    await dropAllCollections()
-})
+afterAll(async () => {
+  await mongoose.connection.close();
+  await dropAllCollections();
+});
