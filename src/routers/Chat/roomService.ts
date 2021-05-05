@@ -51,20 +51,22 @@ class RoomService {
       throw new Error(err);
     }
   };
-  // getRoomsLastChat = async (rooms: Room[]): Promise<string[]> => {
-  //   try {
-  //     let lastChat: chat[] = [];
-  //     for (let i = 0; i < rooms.length; i++) {
-  //       let chat = await this.chat
-  //         .findOne({ roomId: rooms[i]._id })
-  //         .sort("-createdAt");
-  //       lastChat.push(chat);
-  //     }
-  //     return lastChat;
-  //   } catch (err) {
-  //     throw new Error(err);
-  //   }
-  // };
+  getRoomsLastChat = async (rooms: Room[]): Promise<string[]> => {
+    try {
+      let lastChat: string[] = [];
+      for (let i = 0; i < rooms.length; i++) {
+        let chat = await this.chat
+          .findOne({ roomId: rooms[i]._id })
+          .sort("-createdAt");
+        if (chat) {
+          lastChat.push(chat.content);
+        }
+      }
+      return lastChat;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
   getRoomById = async (roomId: string): Promise<Room | null> => {
     try {
       const room = await this.room
