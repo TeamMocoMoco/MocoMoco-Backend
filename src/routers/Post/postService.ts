@@ -5,7 +5,7 @@ const userInfo = "name role userImg";
 class PostService {
   private post = PostModel;
   private user = UserModel;
-  constructor() {}
+  constructor() { }
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -137,6 +137,18 @@ class PostService {
       throw new Error(err);
     }
   };
+
+  getLocationSearch = async (
+    location: string,
+    keyword: string
+  ): Promise<any> => {
+    try {
+      const locations = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=1500&language=ko&keyword=${keyword}&key=AIzaSyA5DBIUlgHZNT_YR1CP1QoK8XpcTjbRCEY`
+      return locations
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
 
   getPostsInMap = async (
     sBound: number,
