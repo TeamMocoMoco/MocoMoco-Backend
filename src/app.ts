@@ -2,12 +2,12 @@ import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import Controller from "./routers/interfaces/controller";
-import {Job} from "node-schedule"
+import { Job } from "node-schedule";
 import "dotenv/config";
 
 class App {
   app: express.Application;
-  schedule:Job
+  schedule: Job;
   constructor(controllers: Controller[]) {
     this.app = express();
     this.setDB();
@@ -53,7 +53,7 @@ class App {
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
         console.log(err);
-        res.status(500).send({ err: err.message.slice(7) });
+        res.status(500).send({ err: err.message });
       }
     );
   }
