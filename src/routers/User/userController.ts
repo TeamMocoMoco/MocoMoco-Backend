@@ -71,7 +71,15 @@ class UserController implements Controller {
       next(new Error("오브젝트 아이디가 아닙니다"));
     try {
       const { user, userPost, userActivePost, participantsPost, participantsActivePost } = await this.userService.getMyPage(userId)
-      return res.send({ result: { user: user, userPost: userPost, userActivePost: userActivePost, participantsPost: participantsPost, participantsActivePost: participantsActivePost } });
+      return res.send({
+        result: {
+          user: user,
+          userPost: userPost,
+          userActivePost: userActivePost,
+          participantsPost: participantsPost,
+          participantsActivePost: participantsActivePost
+        }
+      })
     } catch (err) {
       console.log(err);
       next(err);
