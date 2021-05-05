@@ -212,22 +212,21 @@ class PostController implements Controller {
   };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
-    // const bound = req.query.bound as string
+    // sw가 낮은 쪽, ne가 높은쪽 *한국기준
+    // /posts/map?sw=5,6&ne=150,160
+    const sw = req.query.sw as string
+    const ne = req.query.ne as string
     try {
-      // const bounds = await this.postService.getBounds(bound)
-      // const sBound = bounds[0][0]
-      // const nBound = bounds[1][0]
-      // const wBound = bounds[0][1]
-      // const eBound = bounds[1][1]
-
-      // const bounds = req.query.bounds as string
       // bounds를 4개 숫자로 만들기 동 서 남 북
+      const swNum = await this.mapService.getBounds(sw)
+      const neNum = await this.mapService.getBounds(ne)
       // lat은 남북 높을수록 북쪽
       // lng은 동서 높을수록 동쪽 한국기준
-      const sBound = 10;
-      const nBound = 20;
-      const wBound = 10;
-      const eBound = 20;
+      const sBound = swNum.Lat;
+      const nBound = neNum.Lat;
+      const wBound = swNum.Lng;
+      const eBound = neNum.Lng;
+
       const posts = await this.mapService.getPostsInMap(
         sBound,
         nBound,
@@ -255,7 +254,6 @@ class PostController implements Controller {
       next(err);
     }
   };
-
-  private deleteParticipant: RequestHandler = async (req, res, next) => {};
+  private deleteParticipant: RequestHandler = async (req, res, next) => { };
 }
 export default PostController;

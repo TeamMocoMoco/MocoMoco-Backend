@@ -29,6 +29,19 @@ class MapService {
         }
     }
 
+    getBounds = async (LatLng: string): Promise<{ Lat: number, Lng: number }> => {
+        try {
+            // LatLng = 11.111,22.222
+            const indexOfComma = LatLng.indexOf(",");
+
+            const Lat: number = +LatLng.slice(0, indexOfComma)
+            const Lng: number = +LatLng.substr(indexOfComma + 1)
+            return { Lat, Lng }
+        } catch (err) {
+            throw new Error(err)
+        }
+    }
+
     getPostsInMap = async (
         sBound: number,
         nBound: number,

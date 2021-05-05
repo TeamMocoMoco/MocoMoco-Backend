@@ -244,4 +244,6 @@ export default class PostService {
       throw new Error(err);
     }
   };
+
+  //스케쥴링
 }
