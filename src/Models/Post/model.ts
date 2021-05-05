@@ -4,7 +4,7 @@ import Post from "./interface";
 const PostSchema = new Schema(
   {
     user: { type: Types.ObjectId, ref: "user", required: true },
-    postion: { type: String },
+    position: { type: String },
     language: { type: String },
     title: { type: String, required: true },
     content: { type: String, required: true },
@@ -23,7 +23,7 @@ const PostSchema = new Schema(
   }
 );
 
-PostSchema.index({ status: 1, meeting: 1 })
+PostSchema.index({ status: 1, meeting: 1 });
 
 const PostModel: Model<Post> = model("post", PostSchema);
 export default PostModel;
