@@ -36,7 +36,7 @@ class PostController implements Controller {
     );
     this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
-    this.router.get(`${this.path}/location`, this.getLocationSearch)
+    this.router.get(`${this.path}/location`, this.getLocationSearch);
     this.router.get(`${this.path}/map`, this.getPostsInMap);
     this.router.post(
       `${this.path}/:postId/participants`,
@@ -110,13 +110,23 @@ class PostController implements Controller {
 
   //게시글 전체보기 및 검색하기
   private getAllPosts: RequestHandler = async (req, res, next) => {
+    const category = req.query.category as string;
     const keyword = req.query.keyword as string;
+
     try {
-      if (keyword) {
-        const posts = await this.postService.getPostsByKeyword(keyword);
-        return res.send({ result: posts });
+      let posts: Post[];
+      if (category && keyword) {
+        posts = await this.postService.getAllPostsByKeywordAndCategory(
+          keyword,
+          category
+        );
+      } else if (category) {
+        posts = await this.postService.getAllPostsByCategory(category);
+      } else if (keyword) {
+        posts = await this.postService.getAllPostsByKeyword(keyword);
+      } else {
+        posts = await this.postService.getAllPosts();
       }
-      const posts = await this.postService.getAllPosts();
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
@@ -128,23 +138,25 @@ class PostController implements Controller {
   private getOnlinePosts: RequestHandler = async (req, res, next) => {
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
+
     try {
       //검색
+      let posts: Post[];
       if (category && keyword) {
-        const posts = await this.postService.getPostsByKeywordandCategory(
+        posts = await this.postService.getPostsByKeywordAndCategory(
           keyword,
           category,
           "온라인"
         );
         return res.send({ result: posts });
       } else if (category) {
-        const posts = await this.postService.getPostsByCategory(
-          category,
-          "온라인"
-        );
+        posts = await this.postService.getPostsByCategory(category, "온라인");
         return res.send({ result: posts });
+      } else if (keyword) {
+        posts = await this.postService.getPostsByKeyword(keyword, "온라인");
+      } else {
+        posts = await this.postService.getPostsByMeeting("온라인");
       }
-      const posts = await this.postService.getAllPosts();
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
@@ -158,21 +170,22 @@ class PostController implements Controller {
     const keyword = req.query.keyword as string;
     try {
       //검색
+      let posts: Post[];
       if (category && keyword) {
-        const posts = await this.postService.getPostsByKeywordandCategory(
+        posts = await this.postService.getPostsByKeywordAndCategory(
           keyword,
           category,
           "오프라인"
         );
         return res.send({ result: posts });
       } else if (category) {
-        const posts = await this.postService.getPostsByCategory(
-          category,
-          "오프라인"
-        );
+        posts = await this.postService.getPostsByCategory(category, "오프라인");
         return res.send({ result: posts });
+      } else if (keyword) {
+        posts = await this.postService.getPostsByKeyword(keyword, "오프라인");
+      } else {
+        posts = await this.postService.getPostsByMeeting("오프라인");
       }
-      const posts = await this.postService.getAllPosts();
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
@@ -181,19 +194,22 @@ class PostController implements Controller {
   };
 
   private getLocationSearch: RequestHandler = async (req, res, next) => {
+    const next_page_token = req.query.token as string;
     const location = req.query.location as string;
     const keyword = req.query.keyword as string;
 
     try {
-      console.log(location)
-      console.log(keyword)
+      if (next_page_token) {
+        const locations = await this.mapService.getLocationToken(next_page_token)
+        return res.send(locations.data)
+      }
       const locations = await this.mapService.getLocationSearch(location, keyword)
-      return res.send({ result: locations })
+      return res.send(locations.data)
     } catch (err) {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     }
-  }
+  };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
     // const bound = req.query.bound as string
