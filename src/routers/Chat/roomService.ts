@@ -22,6 +22,7 @@ class RoomService {
       const room = await this.room.findOne({
         admin: roomData.admin,
         participant: userId,
+        postId: roomData.postId,
       });
       if (room) return room._id;
       //새롭게 채팅방 생성하는 경우
@@ -71,7 +72,8 @@ class RoomService {
     try {
       const room = await this.room
         .findById(roomId)
-        .populate("participant name userImg");
+        .populate("participant name userImg")
+        .populate("admin name userImg");
       return room;
     } catch (err) {
       throw new Error(err);

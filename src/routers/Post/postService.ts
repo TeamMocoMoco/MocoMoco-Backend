@@ -1,11 +1,11 @@
 import { Post, PostModel } from "../../models/Post";
 import { User, UserModel } from "../../models/User";
-type Meeting = "온라인" | "오프라인";
-const userInfo = "name role userImg";
-class PostService {
+import { Meeting, userInfo, keywordOption } from "./config";
+
+export default class PostService {
   private post = PostModel;
   private user = UserModel;
-  constructor() { }
+  constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -62,6 +62,7 @@ class PostService {
     }
   };
 
+  //전체 가져오기
   getAllPosts = async (): Promise<Post[]> => {
     try {
       const posts = await this.post
@@ -74,9 +75,47 @@ class PostService {
       throw new Error(err);
     }
   };
-
-  getPostsByKeyword = async (keyword: string): Promise<Post[]> => {
+  //Meeting별 전체 가져오기
+  getPostsByMeeting = async (meeting: Meeting): Promise<Post[]> => {
     try {
+      const posts = await this.post
+        .find({ meeting, status: true })
+        .populate("user", userInfo)
+        .populate("participants", userInfo)
+        .sort("-createdAt");
+      return posts;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  //keyword별
+  getPostsByKeyword = async (
+    keyword: string,
+    meeting: Meeting
+  ): Promise<Post[]> => {
+    try {
+      console.log(keyword);
+      console.log(meeting);
+      const posts = await this.post
+        .find({
+          meeting,
+          $or: [keywordOption(keyword)],
+          status: true,
+        })
+        .populate("user", userInfo)
+        .populate("participants", userInfo)
+        .sort("-createdAt");
+      console.log(posts);
+      return posts;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  getAllPostsByKeyword = async (keyword: string): Promise<Post[]> => {
+    try {
+      console.log(keyword);
       const posts = await this.post
         .find({
           $or: [
@@ -86,18 +125,21 @@ class PostService {
           ],
           status: true,
         })
+        .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
+      console.log(posts);
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  getPostsByKeywordandCategory = async (
+  //카테고리+키워드
+  getPostsByKeywordAndCategory = async (
     keyword: string,
     category: string,
-    meeting: Meeting = "오프라인"
+    meeting: Meeting
   ): Promise<Post[]> => {
     try {
       const posts = await this.post
@@ -114,6 +156,7 @@ class PostService {
             ],
           },
         ])
+        .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
@@ -122,6 +165,33 @@ class PostService {
     }
   };
 
+  getAllPostsByKeywordAndCategory = async (
+    keyword: string,
+    category: string
+  ): Promise<Post[]> => {
+    try {
+      const posts = await this.post
+        .find()
+        .and([
+          { category },
+          { status: true },
+          {
+            $or: [
+              { title: { $regex: keyword } },
+              { content: { $regex: keyword } },
+              { hashtag: { $regex: keyword } },
+            ],
+          },
+        ])
+        .populate("user", userInfo)
+        .populate("participants", userInfo)
+        .sort("-createdAt");
+      return posts;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+  //카테고리
   getPostsByCategory = async (
     category: string,
     meeting: Meeting = "오프라인"
@@ -129,7 +199,23 @@ class PostService {
     try {
       const posts = await this.post
         .find()
-        .and([{ meeting }, { category: category }, { status: true }])
+        .and([{ meeting }, { category }, { status: true }])
+        .populate("user", userInfo)
+        .populate("participants", userInfo)
+        .sort("-createdAt");
+      return posts;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  getAllPostsByCategory = async (category: string): Promise<Post[]> => {
+    try {
+      console.log(category);
+      const posts = await this.post
+        .find()
+        .and([{ category }, { status: true }])
+        .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
@@ -176,5 +262,3 @@ class PostService {
     );
   };
 }
-
-export default PostService;
