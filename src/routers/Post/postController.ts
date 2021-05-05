@@ -20,7 +20,6 @@ class PostController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.patch(`${this.path}/status`, this.changeStatus);
     //게시글 작성
     this.router.post(
       this.path,
@@ -255,12 +254,7 @@ class PostController implements Controller {
       next(err);
     }
   };
+  private deleteParticipant: RequestHandler = async (req, res, next) => { };
 
-  private deleteParticipant: RequestHandler = async (req, res, next) => {};
-
-  private changeStatus: RequestHandler = async (req, res, next) => {
-    await this.postService.changeStatus();
-    return res.send({ result: "success" });
-  };
 }
 export default PostController;

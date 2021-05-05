@@ -246,11 +246,4 @@ export default class PostService {
   };
 
   //스케쥴링
-  changeStatus = async (): Promise<void> => {
-    const date = Date.now();
-    await this.post.updateMany(
-      { startDate: { $lte: new Date(date) } },
-      { $set: { status: false } }
-    );
-  };
 }
