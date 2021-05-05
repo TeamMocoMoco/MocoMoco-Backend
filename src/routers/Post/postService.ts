@@ -66,6 +66,7 @@ class PostService {
     try {
       const posts = await this.post
         .find({ status: true })
+        .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
