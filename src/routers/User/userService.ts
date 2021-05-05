@@ -48,7 +48,13 @@ class UserService {
     }
   }
 
-  getMyPage = async (userId: string): Promise<{ user: User, userPost: Post[], userActivePost: Post[], participantsPost: Post[], participantsActivePost: Post[] }> => {
+  getMyPage = async (userId: string): Promise<{
+    user: User,
+    userPost: Post[],
+    userActivePost: Post[],
+    participantsPost: Post[],
+    participantsActivePost: Post[]
+  }> => {
     try {
       const user = await this.userModel.findById(userId)
       if (!user) throw new Error("없는 유저입니다")
