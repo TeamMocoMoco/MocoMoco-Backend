@@ -113,16 +113,21 @@ class PostController implements Controller {
   private getAllPosts: RequestHandler = async (req, res, next) => {
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
-    console.log(category, keyword);
+
     try {
+      let posts: Post[];
       if (category && keyword) {
-        const posts = await this.postService.getPostsByKeywordandCategory(
+        posts = await this.postService.getAllPostsByKeywordAndCategory(
           keyword,
           category
         );
-        return res.send({ result: posts });
+      } else if (category) {
+        posts = await this.postService.getAllPostsByCategory(category);
+      } else if (keyword) {
+        posts = await this.postService.getAllPostsByKeyword(keyword);
+      } else {
+        posts = await this.postService.getAllPosts();
       }
-      const posts = await this.postService.getAllPosts();
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
@@ -134,23 +139,25 @@ class PostController implements Controller {
   private getOnlinePosts: RequestHandler = async (req, res, next) => {
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
+
     try {
       //검색
+      let posts: Post[];
       if (category && keyword) {
-        const posts = await this.postService.getPostsByKeywordandCategory(
+        posts = await this.postService.getPostsByKeywordAndCategory(
           keyword,
           category,
           "온라인"
         );
         return res.send({ result: posts });
       } else if (category) {
-        const posts = await this.postService.getPostsByCategory(
-          category,
-          "온라인"
-        );
+        posts = await this.postService.getPostsByCategory(category, "온라인");
         return res.send({ result: posts });
+      } else if (keyword) {
+        posts = await this.postService.getPostsByKeyword(keyword, "온라인");
+      } else {
+        posts = await this.postService.getPostsByMeeting("온라인");
       }
-      const posts = await this.postService.getAllPosts();
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
@@ -164,21 +171,22 @@ class PostController implements Controller {
     const keyword = req.query.keyword as string;
     try {
       //검색
+      let posts: Post[];
       if (category && keyword) {
-        const posts = await this.postService.getPostsByKeywordandCategory(
+        posts = await this.postService.getPostsByKeywordAndCategory(
           keyword,
           category,
           "오프라인"
         );
         return res.send({ result: posts });
       } else if (category) {
-        const posts = await this.postService.getPostsByCategory(
-          category,
-          "오프라인"
-        );
+        posts = await this.postService.getPostsByCategory(category, "오프라인");
         return res.send({ result: posts });
+      } else if (keyword) {
+        posts = await this.postService.getPostsByKeyword(keyword, "오프라인");
+      } else {
+        posts = await this.postService.getPostsByMeeting("오프라인");
       }
-      const posts = await this.postService.getAllPosts();
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
