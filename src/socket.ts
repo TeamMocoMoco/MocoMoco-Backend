@@ -1,7 +1,6 @@
 import SocketIO from "socket.io"
 import { Application } from "express"
 import http from "http"
-import { Socket } from "node:dgram"
 
 enum Events {
   CONNECTION = "connection",

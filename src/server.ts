@@ -6,6 +6,7 @@ import SMSController from "./routers/SMS/SMSController";
 import ChatController from "./routers/Chat/chatController";
 import * as http from 'http'
 import ChatServer from "./socket"
+import generateFakeData from "./Test/generateData"
 
 
 const port = 3000;
@@ -20,6 +21,7 @@ const app = new App([
 const server = http.createServer(app);
 const chatServer = new ChatServer(server,app)
 
-server.listen(port, function () {
+server.listen(port, async function () {
+  //await generateFakeData(10,10)
   console.log("Express listening on port", port);
 });
