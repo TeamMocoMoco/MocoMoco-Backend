@@ -5,7 +5,7 @@ const userInfo = "name role userImg";
 class PostService {
   private post = PostModel;
   private user = UserModel;
-  constructor() { }
+  constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -97,9 +97,12 @@ class PostService {
   getPostsByKeywordandCategory = async (
     keyword: string,
     category: string,
-    meeting: Meeting = "오프라인"
+    meeting?: Meeting
   ): Promise<Post[]> => {
     try {
+      console.log(keyword);
+      console.log(category);
+      console.log(meeting);
       const posts = await this.post
         .find()
         .and([
@@ -143,12 +146,12 @@ class PostService {
     keyword: string
   ): Promise<any> => {
     try {
-      const locations = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=1500&language=ko&keyword=${keyword}&key=AIzaSyA5DBIUlgHZNT_YR1CP1QoK8XpcTjbRCEY`
-      return locations
+      const locations = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=1500&language=ko&keyword=${keyword}&key=AIzaSyA5DBIUlgHZNT_YR1CP1QoK8XpcTjbRCEY`;
+      return locations;
     } catch (err) {
-      throw new Error(err)
+      throw new Error(err);
     }
-  }
+  };
 
   getPostsInMap = async (
     sBound: number,

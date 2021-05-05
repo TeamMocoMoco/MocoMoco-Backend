@@ -34,7 +34,7 @@ class PostController implements Controller {
     );
     this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
-    this.router.get(`${this.path}/location`, this.getLocationSearch)
+    this.router.get(`${this.path}/location`, this.getLocationSearch);
     this.router.get(`${this.path}/map`, this.getPostsInMap);
     this.router.post(
       `${this.path}/:postId/participants`,
@@ -108,10 +108,15 @@ class PostController implements Controller {
 
   //게시글 전체보기 및 검색하기
   private getAllPosts: RequestHandler = async (req, res, next) => {
+    const category = req.query.category as string;
     const keyword = req.query.keyword as string;
+    console.log(category, keyword);
     try {
-      if (keyword) {
-        const posts = await this.postService.getPostsByKeyword(keyword);
+      if (category && keyword) {
+        const posts = await this.postService.getPostsByKeywordandCategory(
+          keyword,
+          category
+        );
         return res.send({ result: posts });
       }
       const posts = await this.postService.getAllPosts();
@@ -183,15 +188,18 @@ class PostController implements Controller {
     const keyword = req.query.keyword as string;
 
     try {
-      console.log(location)
-      console.log(keyword)
-      const locations = await this.postService.getLocationSearch(location, keyword)
-      return res.send({ result: locations })
+      console.log(location);
+      console.log(keyword);
+      const locations = await this.postService.getLocationSearch(
+        location,
+        keyword
+      );
+      return res.send({ result: locations });
     } catch (err) {
-      console.log(err)
-      next(err)
+      console.log(err);
+      next(err);
     }
-  }
+  };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
     // const bound = req.query.bound as string
@@ -238,7 +246,7 @@ class PostController implements Controller {
     }
   };
 
-  private deleteParticipant: RequestHandler = async (req, res, next) => { };
+  private deleteParticipant: RequestHandler = async (req, res, next) => {};
 
   private changeStatus: RequestHandler = async (req, res, next) => {
     await this.postService.changeStatus();
