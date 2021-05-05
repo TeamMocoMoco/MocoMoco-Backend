@@ -1,6 +1,7 @@
 import * as faker from "faker"
 import {UserModel,User} from "../models/User"
 import {PostModel,Post} from "../models/Post"
+import {ChatModel,Chat} from "../models/Chat"
 import {rand} from "../middlewares/utile"
 
 
@@ -12,9 +13,10 @@ export default async function generateFakeData(userCount:number, PostsPerUser:nu
 
   const users:User[] = [];
   const posts:Post[] = [];
+  const chats:Chat[] = [];
   const roles:string[] = ["개발자","디자이너","기획자"]
   const categorys:string[] = ["모각코","개발스터디","알고리즘스터디","면접스터디","개념스터디","프로젝트"]
-  const onofflien:string[] = ['온라인',"오프라인"]
+  const onoffline:string[] = ['온라인',"오프라인"]
   const language:string[] = ["파이썬","자바","루비","고","자바스크립트","타입스크립트","노드","C","C++"]
 
   console.log("Preparing fake data.");
@@ -43,7 +45,7 @@ export default async function generateFakeData(userCount:number, PostsPerUser:nu
             title: language[rand(0,language.length)],
             content: language[rand(0,language.length)],
             personnel: rand(0,5),
-            meeting: onofflien[rand(0,onofflien.length)],
+            meeting: onoffline[rand(0,onoffline.length)],
             category: categorys[rand(0,categorys.length)],
             hashtag: [faker.lorem.word()],
             startDate: startDate,
@@ -53,7 +55,7 @@ export default async function generateFakeData(userCount:number, PostsPerUser:nu
     );
     }
   });
-
+  
   console.log("fake data inserting to database...");
   await UserModel.insertMany(users);
   console.log(`${users.length} fake users generated!`);
