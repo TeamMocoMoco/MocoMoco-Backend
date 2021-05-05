@@ -66,6 +66,7 @@ class PostService {
     try {
       const posts = await this.post
         .find({ status: true })
+        .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
       return posts;
@@ -182,6 +183,16 @@ class PostService {
     } catch (err) {
       throw new Error(err);
     }
+  };
+
+  //스케쥴링
+  changeStatus = async (): Promise<void> => {
+    const date = Date.now();
+    console.log(new Date(date));
+    await this.post.updateMany(
+      { startDate: { $lte: new Date(date) } },
+      { $set: { status: false } }
+    );
   };
 }
 
