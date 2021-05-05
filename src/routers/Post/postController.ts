@@ -186,10 +186,8 @@ class PostController implements Controller {
     const keyword = req.query.keyword as string;
 
     try {
-      console.log(location)
-      console.log(keyword)
       const locations = await this.mapService.getLocationSearch(location, keyword)
-      return res.send({ result: locations })
+      return res.send(locations.data)
     } catch (err) {
       console.log(err)
       next(err)
