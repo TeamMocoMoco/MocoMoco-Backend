@@ -3,6 +3,7 @@ import Controller from "../interfaces/controller";
 import { Post, PostDto } from "../../models/Post";
 import { validation, JwtValidation } from "../../middlewares/validation";
 import PostService from "./postService";
+import MapService from "./mapService";
 import "dotenv/config";
 import { Types } from "mongoose";
 
@@ -10,10 +11,12 @@ class PostController implements Controller {
   public path = "/posts";
   public router = express.Router();
   private postService;
+  private mapService;
   private dto = PostDto;
   constructor() {
     this.initializeRoutes();
     this.postService = new PostService();
+    this.mapService = new MapService();
   }
 
   private initializeRoutes() {
@@ -185,7 +188,7 @@ class PostController implements Controller {
     try {
       console.log(location)
       console.log(keyword)
-      const locations = await this.postService.getLocationSearch(location, keyword)
+      const locations = await this.mapService.getLocationSearch(location, keyword)
       return res.send({ result: locations })
     } catch (err) {
       console.log(err)
@@ -210,7 +213,7 @@ class PostController implements Controller {
       const nBound = 20;
       const wBound = 10;
       const eBound = 20;
-      const posts = await this.postService.getPostsInMap(
+      const posts = await this.mapService.getPostsInMap(
         sBound,
         nBound,
         wBound,
