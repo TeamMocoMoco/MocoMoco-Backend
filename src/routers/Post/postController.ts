@@ -182,10 +182,15 @@ class PostController implements Controller {
   };
 
   private getLocationSearch: RequestHandler = async (req, res, next) => {
+    const next_page_token = req.query.token as string;
     const location = req.query.location as string;
     const keyword = req.query.keyword as string;
 
     try {
+      if (next_page_token) {
+        const locations = await this.mapService.getLocationToken(next_page_token)
+        return res.send(locations.data)
+      }
       const locations = await this.mapService.getLocationSearch(location, keyword)
       return res.send(locations.data)
     } catch (err) {
