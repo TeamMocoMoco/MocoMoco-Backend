@@ -15,14 +15,14 @@ class SMSController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/send`, validation(this.dto, true), this.send)
-    this.router.post(`${this.path}/check`, validation(this.dto, true), this.check)
+    this.router.post(`${this.path}/send`, validation(this.dto, true), this.sendSMS)
+    this.router.post(`${this.path}/check`, validation(this.dto, true), this.checkSMS)
   }
 
-  private send: RequestHandler = async (req, res, next) => {
+  private sendSMS: RequestHandler = async (req, res, next) => {
     const phoneData: SMS = req.body
     try {
-      await this.smsService.send(phoneData)
+      await this.smsService.sendSMS(phoneData)
       res.send({ result: "success" })
     } catch (err) {
       console.log(err)
@@ -30,10 +30,10 @@ class SMSController implements Controller {
     }
   }
 
-  private check: RequestHandler = async (req, res, next) => {
+  private checkSMS: RequestHandler = async (req, res, next) => {
     const checkData: SMS = req.body
     try {
-      const checkResult = await this.smsService.check(checkData)
+      const checkResult = await this.smsService.checkSMS(checkData)
       const token = await this.smsService.createToken(checkResult[1])
       if (checkResult[0]) {
         return res.send({ result: { phone: { token } } })

@@ -20,10 +20,14 @@ class ChatController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/myroom`, JwtValidation, this.getMyRooms);
+    this.router.get(`${this.path}/myroom`, JwtValidation, this.getRooms);
     this.router.post(`${this.path}`, JwtValidation, this.createRoom);
-    this.router.get(`${this.path}/:roomId`, JwtValidation, this.getRoom);
-    this.router.post(`${this.path}/:roomId/chat`, JwtValidation, this.postChat);
+    this.router.get(`${this.path}/:roomId`, JwtValidation, this.getRoomById);
+    this.router.post(
+      `${this.path}/:roomId/chat`,
+      JwtValidation,
+      this.createChat
+    );
   }
 
   //방 만들기
@@ -41,17 +45,17 @@ class ChatController implements Controller {
   };
 
   //방 안 채팅 불러오기
-  private getRoom: RequestHandler = async (req, res, next) => {
+  private getRoomById: RequestHandler = async (req, res, next) => {
     const { roomId } = req.params;
     if (!Types.ObjectId.isValid(roomId))
       next(new Error("오브젝트 아이디가 아닙니다."));
 
     try {
-      const checkRoom = await this.roomService.checkRoomById(roomId);
-      if (!checkRoom) throw new Error("Room이 없습니다.");
+      const roomInfo = await this.roomService.getRoomById(roomId);
+      if (!roomInfo) throw new Error("Room이 없습니다.");
 
-      const contents = await this.chatService.getContents(roomId);
-      return res.send({ result: contents });
+      const chat = await this.chatService.getChatById(roomId);
+      return res.send({ result: { roomInfo, chat } });
     } catch (err) {
       console.log(err);
       next(err);
@@ -59,7 +63,7 @@ class ChatController implements Controller {
   };
 
   //채팅하기
-  private postChat: RequestHandler = async (req, res, next) => {
+  private createChat: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
     const chatData: Chat = req.body;
     const { roomId } = req.params;
@@ -70,7 +74,7 @@ class ChatController implements Controller {
       const chat = await this.chatService.creatChat(chatData, userId, roomId);
 
       // 여기서 소켓을 통해서 보낸다.
-      // io.~~~~~~
+      // req.app.get('io').of('/room').to(req.params.id).emit('chat', chat);
       return res.send({ result: "success" });
     } catch (err) {
       console.log(err);
@@ -79,10 +83,10 @@ class ChatController implements Controller {
   };
 
   //내가 속한 채팅방 불러오기
-  private getMyRooms: RequestHandler = async (req, res, next) => {
+  private getRooms: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
     try {
-      const rooms = await this.roomService.getMyRooms(userId);
+      const rooms = await this.roomService.getRooms(userId);
       return res.send({ result: { rooms: rooms } });
     } catch (err) {
       console.log(err);

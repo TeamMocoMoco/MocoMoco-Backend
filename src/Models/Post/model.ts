@@ -23,5 +23,7 @@ const PostSchema = new Schema(
   }
 );
 
+PostSchema.index({ status: 1, meeting: 1 })
+
 const PostModel: Model<Post> = model("post", PostSchema);
 export default PostModel;

@@ -11,9 +11,9 @@ class SMSService {
   private smsModel = SMSModel;
   private userModel = UserModel;
   private ncp: NCPClient = NCP;
-  constructor() {}
+  constructor() { }
 
-  send = async (SMSData: SMS): Promise<void> => {
+  sendSMS = async (SMSData: SMS): Promise<void> => {
     try {
       const generateRand = rand(100000, 999999);
       const { success, msg, status } = await this.ncp.sendSMS({
@@ -34,7 +34,7 @@ class SMSService {
     }
   };
 
-  check = async (SMSData: SMS): Promise<boolTokenSource> => {
+  checkSMS = async (SMSData: SMS): Promise<boolTokenSource> => {
     try {
       const sms = await this.smsModel
         .findOne({ phone: SMSData.phone })
