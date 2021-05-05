@@ -34,6 +34,7 @@ class PostController implements Controller {
     );
     this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
+    this.router.get(`${this.path}/location`, this.getLocationSearch)
     this.router.get(`${this.path}/map`, this.getPostsInMap);
     this.router.post(
       `${this.path}/:postId/participants`,
@@ -177,6 +178,21 @@ class PostController implements Controller {
     }
   };
 
+  private getLocationSearch: RequestHandler = async (req, res, next) => {
+    const location = req.query.location as string;
+    const keyword = req.query.keyword as string;
+
+    try {
+      console.log(location)
+      console.log(keyword)
+      const locations = await this.postService.getLocationSearch(location, keyword)
+      return res.send({ result: locations })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  }
+
   private getPostsInMap: RequestHandler = async (req, res, next) => {
     // const bound = req.query.bound as string
     try {
@@ -222,7 +238,7 @@ class PostController implements Controller {
     }
   };
 
-  private deleteParticipant: RequestHandler = async (req, res, next) => {};
+  private deleteParticipant: RequestHandler = async (req, res, next) => { };
 
   private changeStatus: RequestHandler = async (req, res, next) => {
     await this.postService.changeStatus();
