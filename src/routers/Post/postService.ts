@@ -1,6 +1,6 @@
 import { Post, PostModel } from "../../models/Post";
 import { User, UserModel } from "../../models/User";
-import { Meeting, userInfo, keywordOption } from "./config";
+import { Meeting, userInfo } from "./config";
 
 export default class PostService {
   private post = PostModel;
@@ -95,18 +95,18 @@ export default class PostService {
     meeting: Meeting
   ): Promise<Post[]> => {
     try {
-      console.log(keyword);
-      console.log(meeting);
       const posts = await this.post
         .find({
           meeting,
-          $or: [keywordOption(keyword)],
+          $or: [
+            { title: { $regex: keyword } },
+            { hashtag: { $regex: keyword } },
+          ],
           status: true,
         })
         .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
-      console.log(posts);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -115,12 +115,10 @@ export default class PostService {
 
   getAllPostsByKeyword = async (keyword: string): Promise<Post[]> => {
     try {
-      console.log(keyword);
       const posts = await this.post
         .find({
           $or: [
             { title: { $regex: keyword } },
-            { content: { $regex: keyword } },
             { hashtag: { $regex: keyword } },
           ],
           status: true,
@@ -128,7 +126,6 @@ export default class PostService {
         .populate("user", userInfo)
         .populate("participants", userInfo)
         .sort("-createdAt");
-      console.log(posts);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -151,7 +148,6 @@ export default class PostService {
           {
             $or: [
               { title: { $regex: keyword } },
-              { content: { $regex: keyword } },
               { hashtag: { $regex: keyword } },
             ],
           },
@@ -178,7 +174,6 @@ export default class PostService {
           {
             $or: [
               { title: { $regex: keyword } },
-              { content: { $regex: keyword } },
               { hashtag: { $regex: keyword } },
             ],
           },
@@ -211,7 +206,6 @@ export default class PostService {
 
   getAllPostsByCategory = async (category: string): Promise<Post[]> => {
     try {
-      console.log(category);
       const posts = await this.post
         .find()
         .and([{ category }, { status: true }])
@@ -223,7 +217,6 @@ export default class PostService {
       throw new Error(err);
     }
   };
-
   addParticipant = async (
     postId: string,
     userId: string,
@@ -250,15 +243,5 @@ export default class PostService {
     } catch (err) {
       throw new Error(err);
     }
-  };
-
-  //스케쥴링
-  changeStatus = async (): Promise<void> => {
-    const date = Date.now();
-    console.log(new Date(date));
-    await this.post.updateMany(
-      { startDate: { $lte: new Date(date) } },
-      { $set: { status: false } }
-    );
   };
 }
