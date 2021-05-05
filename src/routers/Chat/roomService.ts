@@ -1,8 +1,10 @@
 import { Room, RoomModel } from "../../models/Room";
 import { Post, PostModel } from "../../models/Post";
+import { Chat, ChatModel } from "../../models/Chat";
 class RoomService {
   private room = RoomModel;
   private post = PostModel;
+  private chat = ChatModel;
   constructor() {}
 
   createRoom = async (roomData: Room, userId: string): Promise<string> => {
@@ -49,7 +51,22 @@ class RoomService {
       throw new Error(err);
     }
   };
-
+  getRoomsLastChat = async (rooms: Room[]): Promise<string[]> => {
+    try {
+      let lastChat: string[] = [];
+      for (let i = 0; i < rooms.length; i++) {
+        let chat = await this.chat
+          .findOne({ roomId: rooms[i]._id })
+          .sort("-createdAt");
+        if (chat) {
+          lastChat.push(chat.content);
+        }
+      }
+      return lastChat;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
   getRoomById = async (roomId: string): Promise<Room | null> => {
     try {
       const room = await this.room
