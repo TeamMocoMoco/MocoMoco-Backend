@@ -10,14 +10,10 @@ class UserService {
   createUser = async (userData: User, phoneData: string): Promise<User> => {
     const userByPhone = await this.userModel.findOne({ phone: phoneData });
     if (userByPhone) throw new Error("이미 존재하는 번호입니다")
+    
     const createUser = new this.userModel({ ...userData, phone: phoneData });
-    try {
-      await createUser.save();
-      return createUser
-    } catch (err) {
-      console.log(err)
-      throw new Error(err)
-    }
+    await createUser.save();
+    return createUser
   }
 
   login = async (phoneData: string): Promise<{token:string, user:User}> => {
@@ -33,19 +29,12 @@ class UserService {
   }
 
   updateUser = async (userUpdateData: Partial<User>, userId: string): Promise<User | null> => {
-    try {
-      const user = await this.userModel.findByIdAndUpdate(
-        userId,
-        {
-          ...userUpdateData,
-        },
-        { new: true }
-      );
-      return user
-    } catch (err) {
-      console.log(err)
-      throw new Error(err)
-    }
+    const user = await this.userModel.findByIdAndUpdate(userId,
+      {...userUpdateData,},
+      { new: true }
+    );
+
+    return user
   }
 
   getMyPage = async (userId: string): Promise<{
@@ -55,7 +44,6 @@ class UserService {
     participantsPost: Post[],
     participantsActivePost: Post[]
   }> => {
-    try {
       const user = await this.userModel.findById(userId)
       if (!user) throw new Error("없는 유저입니다")
       const userPost = await this.postModel.find({ user: user._id }).sort("-createdAt")
@@ -63,10 +51,6 @@ class UserService {
       const participantsPost = await this.postModel.find({ participants: user._id }).sort("-createdAt")
       const participantsActivePost = await this.postModel.find({ $and: [{ participants: user._id }, { status: true }] }).sort("-createdAt")
       return { user, userPost, userActivePost, participantsPost, participantsActivePost }
-    } catch (err) {
-      console.log(err)
-      throw new Error(err)
-    }
   }
 }
 
