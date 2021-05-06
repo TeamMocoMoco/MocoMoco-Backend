@@ -5,6 +5,7 @@ import Controller from "./routers/interfaces/controller";
 import { Job } from "node-schedule";
 import morgan from "morgan";
 import "dotenv/config";
+import { scheduleJob } from "./middlewares/schedule";
 
 class App {
   app: express.Application;
@@ -16,7 +17,7 @@ class App {
     this.setRouter(controllers);
     this.set404Error();
     this.setError();
-    //this.schedule = test
+    this.schedule = scheduleJob;
   }
   private setDB() {
     mongoose
