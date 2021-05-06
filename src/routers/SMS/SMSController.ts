@@ -38,7 +38,7 @@ class SMSController implements Controller {
       if (checkResult[0]) {
         return res.send({ result: { phone: { token } } })
       } else {
-        return res.send({ result: { user: { token } } })
+        return res.send({ result: { user: { _id: checkResult[1], token: token } } })
       }
     } catch (err) {
       console.log(err)
