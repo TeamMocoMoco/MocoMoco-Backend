@@ -110,6 +110,8 @@ class PostController implements Controller {
 
   //게시글 전체보기 및 검색하기
   private getAllPosts: RequestHandler = async (req, res, next) => {
+    const page = req.query.page || "1"
+    const page2: number = +page;
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
 
@@ -117,15 +119,16 @@ class PostController implements Controller {
       let posts: Post[];
       if (category && keyword) {
         posts = await this.postService.getAllPostsByKeywordAndCategory(
+          page2,
           keyword,
           category
         );
       } else if (category) {
-        posts = await this.postService.getAllPostsByCategory(category);
+        posts = await this.postService.getAllPostsByCategory(page2, category);
       } else if (keyword) {
-        posts = await this.postService.getAllPostsByKeyword(keyword);
+        posts = await this.postService.getAllPostsByKeyword(page2, keyword);
       } else {
-        posts = await this.postService.getAllPosts();
+        posts = await this.postService.getAllPosts(page2);
       }
       return res.send({ result: posts });
     } catch (err) {
@@ -136,6 +139,8 @@ class PostController implements Controller {
 
   //게시글 온라인
   private getOnlinePosts: RequestHandler = async (req, res, next) => {
+    const page = req.query.page || "1"
+    const page2: number = +page;
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
 
@@ -144,18 +149,19 @@ class PostController implements Controller {
       let posts: Post[];
       if (category && keyword) {
         posts = await this.postService.getPostsByKeywordAndCategory(
+          page2,
           keyword,
           category,
           "온라인"
         );
         return res.send({ result: posts });
       } else if (category) {
-        posts = await this.postService.getPostsByCategory(category, "온라인");
+        posts = await this.postService.getPostsByCategory(page2, category, "온라인");
         return res.send({ result: posts });
       } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(keyword, "온라인");
+        posts = await this.postService.getPostsByKeyword(page2, keyword, "온라인");
       } else {
-        posts = await this.postService.getPostsByMeeting("온라인");
+        posts = await this.postService.getPostsByMeeting(page2, "온라인");
       }
       return res.send({ result: posts });
     } catch (err) {
@@ -166,6 +172,8 @@ class PostController implements Controller {
 
   //게시글 오프라인
   private getOfflinePosts: RequestHandler = async (req, res, next) => {
+    const page = req.query.page || "1"
+    const page2: number = +page;
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
     try {
@@ -173,18 +181,19 @@ class PostController implements Controller {
       let posts: Post[];
       if (category && keyword) {
         posts = await this.postService.getPostsByKeywordAndCategory(
+          page2,
           keyword,
           category,
           "오프라인"
         );
         return res.send({ result: posts });
       } else if (category) {
-        posts = await this.postService.getPostsByCategory(category, "오프라인");
+        posts = await this.postService.getPostsByCategory(page2, category, "오프라인");
         return res.send({ result: posts });
       } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(keyword, "오프라인");
+        posts = await this.postService.getPostsByKeyword(page2, keyword, "오프라인");
       } else {
-        posts = await this.postService.getPostsByMeeting("오프라인");
+        posts = await this.postService.getPostsByMeeting(page2, "오프라인");
       }
       return res.send({ result: posts });
     } catch (err) {
