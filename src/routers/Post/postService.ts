@@ -260,7 +260,7 @@ export default class PostService {
       if (!participant) throw new Error("잘못된 참가자 정보입니다.");
       if (!post) throw new Error("잘못된 정보가 기재되었습니다."); // postId 또는 작성자(user)가 잘못된 경우
       if (userId == participant._id)
-        throw new Error("본인은 참가자로 넣을 수 없습니다.");
+        throw new Error("본인은 참가자로 넣거나 뺄 수 없습니다.");
       if (post.participants.includes(participant._id))
         throw new Error("이미 참가 확정된 팀원입니다.");
       if (post.participants.length >= post.personnel)
@@ -288,7 +288,14 @@ export default class PostService {
       if (!participant) throw new Error("잘못된 참가자 정보입니다.");
       if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
       if (userId == participant._id)
-        throw new Error("본인은 참가자로 넣고나 뺄 수 없습니다.");
+        throw new Error("본인은 참가자로 넣거나 뺄 수 없습니다.");
+      if (!post.participants.includes(participant._id))
+        throw new Error("참여 인원에 해당 사용자의 정보가 없습니다.");
+      //참여 인원에서 삭제하기
+      await this.post.findByIdAndUpdate(
+        { _id: post._id },
+        { $pull: { participants: participant._id } }
+      );
     } catch (err) {
       throw new Error(err);
     }
