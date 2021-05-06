@@ -1,7 +1,7 @@
 import { Room, RoomModel } from "../../models/Room";
 import { Post, PostModel } from "../../models/Post";
 import { Chat, ChatModel } from "../../models/Chat";
-import { ChatContentType } from "aws-sdk/clients/connectparticipant";
+
 class RoomService {
   private room = RoomModel;
   private post = PostModel;
