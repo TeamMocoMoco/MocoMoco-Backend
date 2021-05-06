@@ -1,6 +1,7 @@
 import { Room, RoomModel } from "../../models/Room";
 import { Post, PostModel } from "../../models/Post";
 import { Chat, ChatModel } from "../../models/Chat";
+import { ChatContentType } from "aws-sdk/clients/connectparticipant";
 class RoomService {
   private room = RoomModel;
   private post = PostModel;
@@ -52,17 +53,23 @@ class RoomService {
       throw new Error(err);
     }
   };
-  getRoomsLastChat = async (rooms: Room[]): Promise<string[]> => {
+  getRoomsLastChat = async (rooms: Room[]): Promise<(Chat | Object)[]> => {
     try {
-      let lastChat: string[] = [];
+      let lastChat: (Chat | Object)[] = [];
+      const chats = await this.chat.find({}).sort("-createdAt");
+
       for (let i = 0; i < rooms.length; i++) {
-        let chat = await this.chat
-          .findOne({ roomId: rooms[i]._id })
-          .sort("-createdAt");
-        if (chat) {
-          lastChat.push(chat.content);
-        } else {
-          lastChat.push("");
+        let flag = 0;
+        for (let j = 0; j < chats.length; j++) {
+          typeof rooms;
+          if (rooms[i]._id == chats[j].roomId) {
+            lastChat.push(chats[j]);
+            flag = 1;
+            break;
+          }
+        }
+        if (flag === 0) {
+          lastChat.push({});
         }
       }
       return lastChat;
