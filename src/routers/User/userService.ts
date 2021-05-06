@@ -20,12 +20,12 @@ class UserService {
     }
   }
 
-  login = async (phoneData: string): Promise<string> => {
+  login = async (phoneData: string): Promise<{token:string, user:User}> => {
     try {
       const user = await this.userModel.findOne({ phone: phoneData });
       if (!user) throw new Error("없는 휴대폰 번호입니다")
       const token = jwt.sign({ userId: user._id }, process.env.TOKEN_KEY as string)
-      return token
+      return {token, user}
     } catch (err) {
       console.log(err)
       throw new Error(err)
