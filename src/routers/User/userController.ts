@@ -41,8 +41,8 @@ class UserController implements Controller {
     const phoneData: string = res.locals.phone
 
     try {
-      const token: string = await this.userService.login(phoneData)
-      return res.send({ result: { user: { token: token } } })
+      const {token, user} = await this.userService.login(phoneData)
+      return res.send({ result: { user: { _id: user._id,token: token } }})
     } catch (err) {
       console.log(err)
       next(err)
