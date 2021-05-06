@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import Controller from "./routers/interfaces/controller";
 import { Job } from "node-schedule";
-import morgan from "morgan"
+import morgan from "morgan";
 import "dotenv/config";
 
 class App {
@@ -36,7 +36,7 @@ class App {
     this.app.use(cors());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(express.json());
-    this.app.use(morgan('dev'))
+    this.app.use(morgan("dev"));
   }
   private setRouter(controllers: Controller[]) {
     this.app.get("/", (req, res) => {

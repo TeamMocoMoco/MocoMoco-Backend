@@ -5,12 +5,11 @@ export default class ChatService {
   getChatById = async (roomId: string): Promise<Chat[]> => {
     try {
       const contents = await this.chatModel.find({ roomId });
-      contents.map((content:Chat)=>{
-        console.log(content.createdAt)
-        const duration = 9*60*60*1000
+      contents.map((content: Chat) => {
+        const duration = 9 * 60 * 60 * 1000;
         content.createdAt.setTime(content.createdAt.getTime() + duration);
-        return content
-      })
+        return content;
+      });
       return contents;
     } catch (err) {
       throw new Error(err);

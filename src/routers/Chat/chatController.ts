@@ -72,9 +72,10 @@ class ChatController implements Controller {
 
     try {
       const chat = await this.chatService.creatChat(chatData, userId, roomId);
-
+      const duration = 9 * 60 * 60 * 1000;
+      chat.createdAt.setTime(chat.createdAt.getTime() + duration);
       // 여기서 소켓을 통해서 보낸다.
-      // req.app.get('io').of('/room').to(req.params.id).emit('chat', chat);
+      req.app.get("io").of("/chat").to(roomId).emit("chat", chat);
       return res.send({ result: "success" });
     } catch (err) {
       console.log(err);
