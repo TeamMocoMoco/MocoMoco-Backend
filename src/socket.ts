@@ -29,19 +29,10 @@ export default class ChatServer {
   run() {
     this.room.on(Events.CONNECTION, (socket: SocketIO.Socket) => {
       console.log("chat 네임스페이스 접속");
-      // const req:http.IncomingMessage = socket.request
-      // const roomInfoUrl = req.headers.referer
-      // if(!roomInfoUrl){
-      //   console.log("방정보가 없습니다.")
-      //   return
-      // }
-      // const roomId = roomInfoUrl
-      // .split('/')[roomInfoUrl.split('/').length - 1]
-      // .replace(/\?.+/, '');
-      // socket.join(roomId)
 
       socket.on(Events.CONNECT_ROOM, (data) => {
         this.roomId = data.roomId;
+        console.log(data.roomId);
         socket.join(data.roomId);
       });
 
@@ -51,7 +42,12 @@ export default class ChatServer {
       });
 
       socket.on(Events.MESSAGE, (data) => {
+        console.log(data);
         socket.to(data.room).emit(data);
+      });
+
+      socket.on(Events.DISCONNECT, () => {
+        console.log("chat 접속 해제 ");
       });
     });
   }
