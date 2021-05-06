@@ -20,8 +20,8 @@ class UserController implements Controller {
   private initializeRoutes() {
     this.router.post(`${this.path}/register`, validation(this.dto), JwtPhoneValidation, this.createUser)
     this.router.post(`${this.path}/login`, validation(this.dto, true), this.login)
-    this.router.patch(`${this.path}/:id`, validation(this.dto, true), JwtValidation, upload.single('img'), this.updateUser)
-    this.router.get(`${this.path}/:id`, validation(this.dto, true), JwtValidation, this.getMyPage)
+    this.router.patch(`${this.path}`, validation(this.dto, true), JwtValidation, upload.single('img'), this.updateUser)
+    this.router.get(`${this.path}`, validation(this.dto, true), JwtValidation, this.getMyPage)
 
   }
 
