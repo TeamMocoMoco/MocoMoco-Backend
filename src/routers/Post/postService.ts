@@ -5,7 +5,7 @@ import { Meeting, userInfo } from "./config";
 export default class PostService {
   private post = PostModel;
   private user = UserModel;
-  constructor() { }
+  constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -71,14 +71,17 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
   //Meeting별 전체 가져오기
-  getPostsByMeeting = async (page2: number, meeting: Meeting): Promise<Post[]> => {
+  getPostsByMeeting = async (
+    page2: number,
+    meeting: Meeting
+  ): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find({ meeting, status: true })
@@ -86,7 +89,7 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -113,14 +116,17 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  getAllPostsByKeyword = async (page2: number, keyword: string): Promise<Post[]> => {
+  getAllPostsByKeyword = async (
+    page2: number,
+    keyword: string
+  ): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find({
@@ -134,7 +140,7 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -166,7 +172,7 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -195,7 +201,7 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -215,14 +221,17 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  getAllPostsByCategory = async (page2: number, category: string): Promise<Post[]> => {
+  getAllPostsByCategory = async (
+    page2: number,
+    category: string
+  ): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find()
@@ -231,7 +240,7 @@ export default class PostService {
         .populate("participants", userInfo)
         .sort("-createdAt")
         .skip((page2 - 1) * 5)
-        .limit(5)
+        .limit(5);
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -248,7 +257,7 @@ export default class PostService {
         this.user.findOne({ _id: participantId }),
         this.post.findOne({ _id: postId, user: userId }),
       ]);
-      if (!participant) throw new Error("잘못된 참가자 정보 입니다.");
+      if (!participant) throw new Error("잘못된 참가자 정보입니다.");
       if (!post) throw new Error("잘못된 정보가 기재되었습니다."); // postId 또는 작성자(user)가 잘못된 경우
       if (userId == participant._id)
         throw new Error("본인은 참가자로 넣을 수 없습니다.");
@@ -266,5 +275,22 @@ export default class PostService {
     }
   };
 
-  //스케쥴링
+  deleteParticipant = async (
+    postId: string,
+    userId: string,
+    participantId: string
+  ): Promise<void> => {
+    try {
+      const [participant, post] = await Promise.all([
+        this.user.findOne({ _id: participantId }),
+        this.post.findOne({ _id: postId, user: userId }),
+      ]);
+      if (!participant) throw new Error("잘못된 참가자 정보입니다.");
+      if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
+      if (userId == participant._id)
+        throw new Error("본인은 참가자로 넣고나 뺄 수 없습니다.");
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
 }
