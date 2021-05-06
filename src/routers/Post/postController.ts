@@ -42,7 +42,12 @@ class PostController implements Controller {
       `${this.path}/:postId/participants`,
       JwtValidation,
       this.addParticipant
-    );
+    ); //참여자 추가하가ㅣ
+    this.router.patch(
+      `${this.path}/:postId/participants`,
+      JwtValidation,
+      this.deleteParticipant
+    ); //침여자 삭제하기
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
     this.router.get(this.path, this.getAllPosts); //게시글 전체
@@ -110,7 +115,7 @@ class PostController implements Controller {
 
   //게시글 전체보기 및 검색하기
   private getAllPosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1"
+    const page = req.query.page || "1";
     const page2: number = +page;
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
@@ -139,7 +144,7 @@ class PostController implements Controller {
 
   //게시글 온라인
   private getOnlinePosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1"
+    const page = req.query.page || "1";
     const page2: number = +page;
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
@@ -156,10 +161,18 @@ class PostController implements Controller {
         );
         return res.send({ result: posts });
       } else if (category) {
-        posts = await this.postService.getPostsByCategory(page2, category, "온라인");
+        posts = await this.postService.getPostsByCategory(
+          page2,
+          category,
+          "온라인"
+        );
         return res.send({ result: posts });
       } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(page2, keyword, "온라인");
+        posts = await this.postService.getPostsByKeyword(
+          page2,
+          keyword,
+          "온라인"
+        );
       } else {
         posts = await this.postService.getPostsByMeeting(page2, "온라인");
       }
@@ -172,7 +185,7 @@ class PostController implements Controller {
 
   //게시글 오프라인
   private getOfflinePosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1"
+    const page = req.query.page || "1";
     const page2: number = +page;
     const category = req.query.category as string;
     const keyword = req.query.keyword as string;
@@ -188,10 +201,18 @@ class PostController implements Controller {
         );
         return res.send({ result: posts });
       } else if (category) {
-        posts = await this.postService.getPostsByCategory(page2, category, "오프라인");
+        posts = await this.postService.getPostsByCategory(
+          page2,
+          category,
+          "오프라인"
+        );
         return res.send({ result: posts });
       } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(page2, keyword, "오프라인");
+        posts = await this.postService.getPostsByKeyword(
+          page2,
+          keyword,
+          "오프라인"
+        );
       } else {
         posts = await this.postService.getPostsByMeeting(page2, "오프라인");
       }
@@ -209,11 +230,16 @@ class PostController implements Controller {
 
     try {
       if (next_page_token) {
-        const locations = await this.mapService.getLocationToken(next_page_token)
-        return res.send(locations.data)
+        const locations = await this.mapService.getLocationToken(
+          next_page_token
+        );
+        return res.send(locations.data);
       }
-      const locations = await this.mapService.getLocationSearch(location, keyword)
-      return res.send(locations.data)
+      const locations = await this.mapService.getLocationSearch(
+        location,
+        keyword
+      );
+      return res.send(locations.data);
     } catch (err) {
       console.log(err);
       next(err);
@@ -223,12 +249,12 @@ class PostController implements Controller {
   private getPostsInMap: RequestHandler = async (req, res, next) => {
     // sw가 낮은 쪽, ne가 높은쪽 *한국기준
     // /posts/map?sw=5,6&ne=150,160
-    const sw = req.query.sw as string
-    const ne = req.query.ne as string
+    const sw = req.query.sw as string;
+    const ne = req.query.ne as string;
     try {
       // bounds를 4개 숫자로 만들기 동 서 남 북
-      const swNum = await this.mapService.getBounds(sw)
-      const neNum = await this.mapService.getBounds(ne)
+      const swNum = await this.mapService.getBounds(sw);
+      const neNum = await this.mapService.getBounds(ne);
       // lat은 남북 높을수록 북쪽
       // lng은 동서 높을수록 동쪽 한국기준
       const sBound = swNum.Lat;
@@ -257,12 +283,25 @@ class PostController implements Controller {
       if (!Types.ObjectId.isValid(postId))
         next(new Error("오브젝트 아이디가 아닙니다"));
       await this.postService.addParticipant(postId, userId, participantId);
-      return res.send({ result: "성공적으로 추가했습니다!" });
+      return res.send({ result: "성공적으로 참가자를 추가했습니다!" });
     } catch (err) {
       console.log(err);
       next(err);
     }
   };
-  private deleteParticipant: RequestHandler = async (req, res, next) => { };
+  private deleteParticipant: RequestHandler = async (req, res, next) => {
+    const { postId } = req.params;
+    const userId = res.locals.user;
+    const { participantId } = req.body;
+    try {
+      if (!Types.ObjectId.isValid(postId))
+        next(new Error("오브젝트 아이디가 아닙니다."));
+      await this.postService.deleteParticipant(postId, userId, participantId);
+      return res.send({ result: "성공적으로 참가자를 삭제했습니다." });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 export default PostController;
