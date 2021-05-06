@@ -61,6 +61,8 @@ class RoomService {
           .sort("-createdAt");
         if (chat) {
           lastChat.push(chat.content);
+        } else {
+          lastChat.push("");
         }
       }
       return lastChat;

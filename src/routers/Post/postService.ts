@@ -5,7 +5,7 @@ import { Meeting, userInfo } from "./config";
 export default class PostService {
   private post = PostModel;
   private user = UserModel;
-  constructor() {}
+  constructor() { }
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.post({ ...postData, user: userId });
@@ -63,26 +63,30 @@ export default class PostService {
   };
 
   //전체 가져오기
-  getAllPosts = async (): Promise<Post[]> => {
+  getAllPosts = async (page2: number): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find({ status: true })
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
   //Meeting별 전체 가져오기
-  getPostsByMeeting = async (meeting: Meeting): Promise<Post[]> => {
+  getPostsByMeeting = async (page2: number, meeting: Meeting): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find({ meeting, status: true })
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -91,6 +95,7 @@ export default class PostService {
 
   //keyword별
   getPostsByKeyword = async (
+    page2: number,
     keyword: string,
     meeting: Meeting
   ): Promise<Post[]> => {
@@ -106,14 +111,16 @@ export default class PostService {
         })
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  getAllPostsByKeyword = async (keyword: string): Promise<Post[]> => {
+  getAllPostsByKeyword = async (page2: number, keyword: string): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find({
@@ -125,7 +132,9 @@ export default class PostService {
         })
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -134,6 +143,7 @@ export default class PostService {
 
   //카테고리+키워드
   getPostsByKeywordAndCategory = async (
+    page2: number,
     keyword: string,
     category: string,
     meeting: Meeting
@@ -154,7 +164,9 @@ export default class PostService {
         ])
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -162,6 +174,7 @@ export default class PostService {
   };
 
   getAllPostsByKeywordAndCategory = async (
+    page2: number,
     keyword: string,
     category: string
   ): Promise<Post[]> => {
@@ -180,7 +193,9 @@ export default class PostService {
         ])
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
@@ -188,6 +203,7 @@ export default class PostService {
   };
   //카테고리
   getPostsByCategory = async (
+    page2: number,
     category: string,
     meeting: Meeting = "오프라인"
   ): Promise<Post[]> => {
@@ -197,26 +213,31 @@ export default class PostService {
         .and([{ meeting }, { category }, { status: true }])
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
 
-  getAllPostsByCategory = async (category: string): Promise<Post[]> => {
+  getAllPostsByCategory = async (page2: number, category: string): Promise<Post[]> => {
     try {
       const posts = await this.post
         .find()
         .and([{ category }, { status: true }])
         .populate("user", userInfo)
         .populate("participants", userInfo)
-        .sort("-createdAt");
+        .sort("-createdAt")
+        .skip((page2 - 1) * 5)
+        .limit(5)
       return posts;
     } catch (err) {
       throw new Error(err);
     }
   };
+
   addParticipant = async (
     postId: string,
     userId: string,

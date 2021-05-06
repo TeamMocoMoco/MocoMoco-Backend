@@ -12,7 +12,7 @@ class MapService {
         try {
             const response = await axios
                 .get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=1500&language=ko&keyword=`
-                    + encodeURI(keyword) + `&key=AIzaSyA5DBIUlgHZNT_YR1CP1QoK8XpcTjbRCEY`);
+                    + encodeURI(keyword) + `&key=${process.env.GOOGLE_API_KEY}`);
             return response
         } catch (err) {
             throw new Error(err)
@@ -22,7 +22,7 @@ class MapService {
     getLocationToken = async (token: string): Promise<any> => {
         try {
             const response = await axios
-                .get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=${token}&key=AIzaSyA5DBIUlgHZNT_YR1CP1QoK8XpcTjbRCEY`)
+                .get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=${token}&key=${process.env.GOOGLE_API_KEY}`)
             return response
         } catch (err) {
             throw new Error(err)
