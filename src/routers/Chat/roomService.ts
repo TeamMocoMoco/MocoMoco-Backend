@@ -47,7 +47,8 @@ class RoomService {
           $or: [{ admin: userId }, { participant: userId }],
         })
         .populate("participant name userImg")
-        .populate("admin name userImg");
+        .populate("admin name userImg")
+        .populate("lastChat")
       return rooms;
     } catch (err) {
       throw new Error(err);

@@ -10,5 +10,16 @@ const RoomSchema = new Schema(
   { timestamps: true }
 );
 
+RoomSchema.virtual("lastChat",{
+  ref:"chat",
+  localField:"_id", // roomSchema에서 참조하는 것
+  foreignField:"roomId", // chatSchema에서 참자하는 것이다.
+  options: { sort: { createdAt: -1 }, perDocumentLimit: 1}
+})
+
+RoomSchema.set("toObject",{virtuals:true})
+RoomSchema.set("toJSON",{virtuals:true})
+
+
 const RoomModel: Model<Room> = model("room", RoomSchema);
 export default RoomModel;
