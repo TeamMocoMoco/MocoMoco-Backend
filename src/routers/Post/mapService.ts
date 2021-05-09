@@ -50,13 +50,33 @@ class MapService {
     }
   }
 
-  getMapPostsByCenter = async (Lat: number, Lnt: number): Promise<Post[]> => {
+  getMapPostsByCenter = async (Lat: number, Lng: number): Promise<Post[]> => {
     try {
-      const posts = await this.post.find({ status: true })
-      // const distanceList = []
-      // for (let i of posts) {
-      //   console.log(i)
-      // }
+      const postsMaxNum = 20
+      const posts = await this.post.find({
+        $and: [
+          { status: true },
+          { meeting: "오프라인" }
+        ]
+      })
+      const distanceList = []
+      for (let i = 0; i < posts.length; i++) {
+        const location = posts[i].location
+        if (location) {
+          const distance = ((location[0] - Lat) ** 2) + ((location[1] - Lng) ** 2)
+          distanceList.push({ i, distance })
+        }
+      }
+      distanceList.sort(function (a, b) {
+        return a.distance - b.distance
+      })
+      const postsList = []
+      if (distanceList.length > postsMaxNum) {
+        for (let j = 0; j < postsMaxNum; j++) {
+          postsList.push(posts[distanceList[j].i])
+        }
+        return postsList
+      }
       return posts
     } catch (err) {
       throw new Error(err)
@@ -73,6 +93,7 @@ class MapService {
       const posts = await this.post.find({
         $and: [
           { status: true },
+          { meeting: "오프라인" },
           { "location": { $size: 2 } },
           { "location.0": { $gt: sBound, $lt: nBound } },
           { "location.1": { $gt: wBound, $lt: eBound } },

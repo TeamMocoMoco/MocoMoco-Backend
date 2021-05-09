@@ -245,7 +245,6 @@ class PostController implements Controller {
     const center = req.query.center as string;
     if (center) {
       try {
-        console.log(1)
         const centerNum = await this.mapService.getLatLng(center)
         const Lat = centerNum.Lat
         const Lng = centerNum.Lng
@@ -257,6 +256,7 @@ class PostController implements Controller {
       }
     }
 
+    // 혹시 모르니까 살려두는 Bounds로 포스트 리스트 얻기
     // sw가 낮은 쪽, ne가 높은쪽 *한국기준
     // /posts/map?sw=5,6&ne=150,160
     const sw = req.query.sw as string;
