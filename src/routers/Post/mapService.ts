@@ -98,24 +98,29 @@ class MapService {
           { "location.0": { $gt: sBound, $lt: nBound } },
           { "location.1": { $gt: wBound, $lt: eBound } },
         ],
-      });
-      posts.map((post: Post) => {
-        if (post.location) {
-          const randLat = rand(-400, 400);
-          const offsetLat = randLat * 0.000001
-          post.location[0] = post.location[0] + offsetLat
-          const randLng = rand(-40000, 40000);
-          const offsetLng = randLng * 0.000001
-          post.location[1] = post.location[1] + offsetLng
-          return post
-        }
       })
       return posts;
     } catch (err) {
       throw new Error(err);
     }
-  };
+  }
 
+  randomizeLocation = async (posts: Post[]): Promise<Post[]> => {
+    posts.map((post: Post) => {
+      if (post.location) {
+        const randLat = rand(-400, 400);
+        const offsetLat = randLat * 0.000001
+        post.location[0] = post.location[0] + offsetLat
+        post.location[0] = Number(post.location[0].toFixed(6))
+        const randLng = rand(-400, 400);
+        const offsetLng = randLng * 0.000001
+        post.location[1] = post.location[1] + offsetLng
+        post.location[1] = Number(post.location[1].toFixed(6))
+        return post
+      }
+    })
+    return posts
+  }
 }
 
 export default MapService;

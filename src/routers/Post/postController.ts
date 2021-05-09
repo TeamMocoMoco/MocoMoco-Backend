@@ -249,7 +249,8 @@ class PostController implements Controller {
         const Lat = centerNum.Lat
         const Lng = centerNum.Lng
         const posts = await this.mapService.getMapPostsByCenter(Lat, Lng)
-        return res.send({ result: posts })
+        const randomziedPosts = await this.mapService.randomizeLocation(posts)
+        return res.send({ result: randomziedPosts })
       } catch (err) {
         console.log(err)
         next(err)
@@ -278,7 +279,8 @@ class PostController implements Controller {
         wBound,
         eBound
       );
-      return res.send({ result: posts });
+      const randomziedPosts = await this.mapService.randomizeLocation(posts)
+      return res.send({ result: randomziedPosts })
     } catch (err) {
       console.log(err);
       next(err);
