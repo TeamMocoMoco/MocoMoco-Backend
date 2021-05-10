@@ -1,25 +1,19 @@
-import mongoose from "mongoose";
-import { dropAllCollections, removeAllCollections } from "../test-setup";
-import PostService from "../../routers/Post/postService";
-import { PostModel, PostDto, Post } from "../../models/Post";
-import { UserModel, UserDTO, User } from "../../models/User";
-const databaseName = "test";
+import mongoose from "mongoose"
+import { dropAllCollections, removeAllCollections } from "../test-setup"
+import PostService from "../../routers/Post/postService"
+const databaseName = "test"
 
 beforeAll(async () => {
-  const url = `mongodb://127.0.0.1/${databaseName}`;
-  await mongoose.connect(url, { useNewUrlParser: true });
-});
+  const url = `mongodb://127.0.0.1/${databaseName}`
+  await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+})
 
-describe("post test", () => {
-  const postService = new PostService();
-  test("post create test", () => {});
-});
-
-afterEach(async () => {
-  await removeAllCollections();
-});
+describe("postService test", () => {
+  const postService = new PostService()
+  test("포스트 생성", () => {})
+})
 
 afterAll(async () => {
-  await mongoose.connection.close();
-  await dropAllCollections();
-});
+  await mongoose.connection.close()
+  await dropAllCollections()
+})
