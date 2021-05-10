@@ -42,7 +42,7 @@ class PostController implements Controller {
       `${this.path}/:postId/participants`,
       JwtValidation,
       this.addParticipant
-    ); //참여자 추가하가ㅣ
+    ); //참여자 추가하가
     this.router.patch(
       `${this.path}/:postId/participants`,
       JwtValidation,
@@ -229,10 +229,14 @@ class PostController implements Controller {
 
     try {
       if (next_page_token) {
-        const locations = await this.mapService.getLocationToken(next_page_token);
+        const locations = await this.mapService.getLocationToken(
+          next_page_token
+        );
         return res.send(locations.data);
       }
-      if (!keyword) { next(new Error("검색어가 없습니다.")) }
+      if (!keyword) {
+        next(new Error("검색어가 없습니다."));
+      }
       const locations = await this.mapService.getLocationSearch(keyword);
       return res.send(locations.data);
     } catch (err) {
@@ -245,15 +249,15 @@ class PostController implements Controller {
     const center = req.query.center as string;
     if (center) {
       try {
-        const centerNum = await this.mapService.getLatLng(center)
-        const Lat = centerNum.Lat
-        const Lng = centerNum.Lng
-        const posts = await this.mapService.getMapPostsByCenter(Lat, Lng)
-        const randomziedPosts = await this.mapService.randomizeLocation(posts)
-        return res.send({ result: randomziedPosts })
+        const centerNum = await this.mapService.getLatLng(center);
+        const Lat = centerNum.Lat;
+        const Lng = centerNum.Lng;
+        const posts = await this.mapService.getMapPostsByCenter(Lat, Lng);
+        const randomziedPosts = await this.mapService.randomizeLocation(posts);
+        return res.send({ result: randomziedPosts });
       } catch (err) {
-        console.log(err)
-        next(err)
+        console.log(err);
+        next(err);
       }
     }
 
@@ -279,8 +283,8 @@ class PostController implements Controller {
         wBound,
         eBound
       );
-      const randomziedPosts = await this.mapService.randomizeLocation(posts)
-      return res.send({ result: randomziedPosts })
+      const randomziedPosts = await this.mapService.randomizeLocation(posts);
+      return res.send({ result: randomziedPosts });
     } catch (err) {
       console.log(err);
       next(err);
