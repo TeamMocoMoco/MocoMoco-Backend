@@ -7,7 +7,7 @@ import { Room } from "../../models/Room";
 import { JwtValidation } from "../../middlewares/validation";
 import { Types } from "mongoose";
 
-class ChatController implements Controller {
+export default class ChatController implements Controller {
   public path = "/rooms";
   public router = express.Router();
   private chatService;
@@ -96,4 +96,3 @@ class ChatController implements Controller {
     }
   };
 }
-export default ChatController;

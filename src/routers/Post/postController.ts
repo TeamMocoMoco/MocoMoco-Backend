@@ -4,10 +4,9 @@ import { Post, PostDto } from "../../models/Post";
 import { validation, JwtValidation } from "../../middlewares/validation";
 import PostService from "./postService";
 import MapService from "./mapService";
-import "dotenv/config";
 import { Types } from "mongoose";
 
-class PostController implements Controller {
+export default class PostController implements Controller {
   public path = "/posts";
   public router = express.Router();
   private postService;
@@ -40,7 +39,7 @@ class PostController implements Controller {
       `${this.path}/:postId/participants`,
       JwtValidation,
       this.addParticipant
-    ); //참여자 추가하가
+    ); //참여자 추가하기
     this.router.patch(
       `${this.path}/:postId/participants`,
       JwtValidation,
@@ -95,6 +94,7 @@ class PostController implements Controller {
       next(err);
     }
   };
+
   //게시글 삭제
   private deletePost: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
@@ -133,13 +133,14 @@ class PostController implements Controller {
     }
   };
 
+  // 위치 검색 결과
   private getLocationSearch: RequestHandler = async (req, res, next) => {
     const next_page_token = req.query.token as string;
     const keyword = req.query.keyword as string;
 
     try {
       if (next_page_token) {
-        const locations = await this.mapService.getLocationToken(
+        const locations = await this.mapService.getLocationByToken(
           next_page_token
         );
         return res.send(locations.data);
@@ -147,7 +148,7 @@ class PostController implements Controller {
       if (!keyword) {
         next(new Error("검색어가 없습니다."));
       }
-      const locations = await this.mapService.getLocationSearch(keyword);
+      const locations = await this.mapService.getLocationBySearch(keyword);
       return res.send(locations.data);
     } catch (err) {
       console.log(err);
@@ -155,6 +156,7 @@ class PostController implements Controller {
     }
   };
 
+  // 지도 검색
   private getPostsInMap: RequestHandler = async (req, res, next) => {
     const center = req.query.center as string;
     if (center) {
@@ -170,44 +172,16 @@ class PostController implements Controller {
         next(err);
       }
     }
-
-    // 혹시 모르니까 살려두는 Bounds로 포스트 리스트 얻기
-    // sw가 낮은 쪽, ne가 높은쪽 *한국기준
-    // /posts/map?sw=5,6&ne=150,160
-    const sw = req.query.sw as string;
-    const ne = req.query.ne as string;
-    try {
-      // bounds를 4개 숫자로 만들기 동 서 남 북
-      const swNum = await this.mapService.getLatLng(sw);
-      const neNum = await this.mapService.getLatLng(ne);
-      // lat은 남북 높을수록 북쪽
-      // lng은 동서 높을수록 동쪽 한국기준
-      const sBound = swNum.Lat;
-      const nBound = neNum.Lat;
-      const wBound = swNum.Lng;
-      const eBound = neNum.Lng;
-
-      const posts = await this.mapService.getMapPostsByBounds(
-        sBound,
-        nBound,
-        wBound,
-        eBound
-      );
-      const randomziedPosts = await this.mapService.randomizeLocation(posts);
-      return res.send({ result: randomziedPosts });
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
   };
 
+  //참여자 추가
   private addParticipant: RequestHandler = async (req, res, next) => {
     const { postId } = req.params;
     const userId = res.locals.user;
     const { participantId } = req.body;
+    if (!Types.ObjectId.isValid(postId))
+      next(new Error("오브젝트 아이디가 아닙니다"));
     try {
-      if (!Types.ObjectId.isValid(postId))
-        next(new Error("오브젝트 아이디가 아닙니다"));
       await this.postService.addParticipant(postId, userId, participantId);
       return res.send({ result: "성공적으로 참가자를 추가했습니다!" });
     } catch (err) {
@@ -215,13 +189,15 @@ class PostController implements Controller {
       next(err);
     }
   };
+
+  //참여자 삭제
   private deleteParticipant: RequestHandler = async (req, res, next) => {
     const { postId } = req.params;
     const userId = res.locals.user;
     const { participantId } = req.body;
+    if (!Types.ObjectId.isValid(postId))
+      next(new Error("오브젝트 아이디가 아닙니다."));
     try {
-      if (!Types.ObjectId.isValid(postId))
-        next(new Error("오브젝트 아이디가 아닙니다."));
       await this.postService.deleteParticipant(postId, userId, participantId);
       return res.send({ result: "성공적으로 참가자를 삭제했습니다." });
     } catch (err) {
@@ -230,4 +206,3 @@ class PostController implements Controller {
     }
   };
 }
-export default PostController;

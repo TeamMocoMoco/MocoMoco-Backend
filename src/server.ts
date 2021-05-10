@@ -2,7 +2,7 @@ import "dotenv/config";
 import App from "./app";
 import UserController from "./routers/User/userController";
 import PostController from "./routers/Post/postController";
-import SMSController from "./routers/SMS/SMSController";
+import SMSController from "./routers/SMS/smsController";
 import ChatController from "./routers/Chat/chatController";
 import * as http from "http";
 import ChatServer from "./socket";

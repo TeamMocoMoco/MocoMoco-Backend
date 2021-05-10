@@ -7,8 +7,7 @@ export default class ScheduleService {
     this.postModel = PostModel;
   }
   changeStatus = async (): Promise<void> => {
-    const date = Date.now();
-    const real_date = new Date(date);
+    const real_date = new Date(Date.now());
     real_date.setHours(real_date.getHours() + 9);
     await this.postModel.updateMany(
       { startDate: { $lte: real_date } },

@@ -9,7 +9,6 @@ export default class PostService {
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     const newPost = new this.postModel({ ...postData, user: userId });
-
     await newPost.save();
     return newPost;
   };

@@ -4,14 +4,13 @@ import NCP from "../../middlewares/smsService";
 import { NCPClient } from "node-sens";
 import jwt from "jsonwebtoken";
 import { rand } from "../../middlewares/utile";
+import { boolTokenSource } from "../config";
 
-type boolTokenSource = [boolean, string];
-
-class SMSService {
+export default class SMSService {
   private smsModel = SMSModel;
   private userModel = UserModel;
   private ncp: NCPClient = NCP;
-  constructor() { }
+  constructor() {}
 
   sendSMS = async (SMSData: SMS): Promise<void> => {
     const generateRand = rand(100000, 999999);
@@ -43,8 +42,6 @@ class SMSService {
   createToken = async (tokenSource: string): Promise<string> => {
     const secret = process.env.TOKEN_KEY as string;
     const token = jwt.sign({ userId: tokenSource }, secret);
-    return token
+    return token;
   };
 }
-
-export default SMSService;
