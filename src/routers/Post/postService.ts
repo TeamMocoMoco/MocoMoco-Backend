@@ -1,6 +1,6 @@
 import { Post, PostModel } from "../../models/Post";
 import { User, UserModel } from "../../models/User";
-import { Meeting, userInfo } from "./config";
+import { Meeting, userInfo } from "../config";
 
 export default class PostService {
   private postModel = PostModel;
