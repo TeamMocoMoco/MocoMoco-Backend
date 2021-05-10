@@ -10,7 +10,8 @@ const s3 = new AWS.S3({
 
 const S3storage = multerS3({
   s3,
-  bucket: process.env.BUCKET_NAME ||"test",
+  bucket: process.env.BUCKET_NAME || "test",
+  contentType: multerS3.AUTO_CONTENT_TYPE,
   key(req, file, cb) {
     cb(null, `original/${Date.now()}${path.basename(file.originalname)}`)
   },
@@ -26,7 +27,7 @@ const serverStorage = multer.diskStorage({
 })
 
 
-const upload= multer({
+const upload = multer({
   storage: S3storage,
 })
 
