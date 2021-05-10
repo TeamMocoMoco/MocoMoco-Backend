@@ -1,10 +1,10 @@
 import express, { RequestHandler } from "express";
 import Controller from "../interfaces/controller";
+import ChatService from "./chatService";
+import RoomService from "./roomService";
 import { Chat } from "../../models/Chat";
 import { Room } from "../../models/Room";
 import { JwtValidation } from "../../middlewares/validation";
-import ChatService from "./chatService";
-import RoomService from "./roomService";
 import { Types } from "mongoose";
 
 class ChatController implements Controller {

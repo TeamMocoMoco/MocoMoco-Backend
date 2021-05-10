@@ -8,7 +8,7 @@ import * as http from "http";
 import ChatServer from "./socket";
 import generateFakeData from "./Test/generateData";
 
-const port = 3000;
+const port = process.env.PORT || 5000;
 
 const app = new App([
   new UserController(),
@@ -21,7 +21,6 @@ const server = http.createServer(app);
 const chatServer = new ChatServer(server, app);
 
 server.listen(port, async function () {
-  // generateFakeData(5, 5);
-  const date = Date.now();
-  console.log("Express listening on port", port);
+  // generateFakeData(5, 5)
+  console.log("Server Start~!");
 });

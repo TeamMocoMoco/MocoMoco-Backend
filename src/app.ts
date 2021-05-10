@@ -1,10 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import Controller from "./routers/interfaces/controller";
-import { Job } from "node-schedule";
 import morgan from "morgan";
 import "dotenv/config";
+import { Job } from "node-schedule";
 import { scheduleJob } from "./middlewares/schedule";
 
 class App {
@@ -34,7 +33,6 @@ class App {
       .catch((err) => console.log(err));
   }
   private setMiddleWare() {
-    this.app.use(cors());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(express.json());
     this.app.use(morgan("dev"));

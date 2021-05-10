@@ -16,9 +16,11 @@ class RoomService {
       user: roomData.admin,
     });
     if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
+
     // 자신의 게시물에는 채팅방X
     if (roomData.admin === userId)
       throw new Error("자신의 게시물에는 채팅이 불가능합니다.");
+
     //이미 채팅방이 생성된 경우
     const room = await this.roomModel.findOne({
       admin: roomData.admin,
@@ -26,30 +28,26 @@ class RoomService {
       postId: roomData.postId,
     });
     if (room) return room._id;
+
     //새롭게 채팅방 생성하는 경우
     const newRoom = new this.roomModel({
       postId: roomData.postId,
       admin: roomData.admin,
       participant: userId,
     });
-
     await newRoom.save();
     return newRoom._id;
   };
 
   getRooms = async (userId: string): Promise<Room[]> => {
-    try {
-      const rooms = await this.roomModel
-        .find({
-          $or: [{ admin: userId }, { participant: userId }],
-        })
-        .populate("participant name userImg")
-        .populate("admin name userImg")
-        .populate("lastChat")
-      return rooms;
-    } catch (err) {
-      throw new Error(err);
-    }
+    const rooms = await this.roomModel
+      .find({
+        $or: [{ admin: userId }, { participant: userId }],
+      })
+      .populate("participant", userInfo)
+      .populate("admin", userInfo)
+      .populate("lastChat");
+    return rooms;
   };
 
   getRoomsLastChat = async (rooms: Room[]): Promise<(Chat | Object)[]> => {
