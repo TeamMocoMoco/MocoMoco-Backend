@@ -34,15 +34,13 @@ class PostController implements Controller {
       validation(this.dto, true),
       this.updatePost
     );
-    this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
-    this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/location`, this.getLocationSearch);
     this.router.get(`${this.path}/map`, this.getPostsInMap);
     this.router.post(
       `${this.path}/:postId/participants`,
       JwtValidation,
       this.addParticipant
-    ); //참여자 추가하가ㅣ
+    ); //참여자 추가하가
     this.router.patch(
       `${this.path}/:postId/participants`,
       JwtValidation,
@@ -50,7 +48,7 @@ class PostController implements Controller {
     ); //침여자 삭제하기
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
-    this.router.get(this.path, this.getAllPosts); //게시글 전체
+    this.router.get(this.path, this.getPosts); //게시글 보기(검색 포함)
   }
 
   //게시글 작성
@@ -113,109 +111,21 @@ class PostController implements Controller {
     }
   };
 
-  //게시글 전체보기 및 검색하기
-  private getAllPosts: RequestHandler = async (req, res, next) => {
+  //게시글 보기(검색 포함)
+  private getPosts: RequestHandler = async (req, res, next) => {
     const page = req.query.page || "1";
     const page2: number = +page;
+    const meeting = req.query.meeting as string;
     const category = req.query.category as string;
-    const keyword = req.query.keyword as string;
+    const keyword = (req.query.keyword as string) || "";
 
     try {
-      let posts: Post[];
-      if (category && keyword) {
-        posts = await this.postService.getAllPostsByKeywordAndCategory(
-          page2,
-          keyword,
-          category
-        );
-      } else if (category) {
-        posts = await this.postService.getAllPostsByCategory(page2, category);
-      } else if (keyword) {
-        posts = await this.postService.getAllPostsByKeyword(page2, keyword);
-      } else {
-        posts = await this.postService.getAllPosts(page2);
-      }
-      return res.send({ result: posts });
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
-  };
-
-  //게시글 온라인
-  private getOnlinePosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1";
-    const page2: number = +page;
-    const category = req.query.category as string;
-    const keyword = req.query.keyword as string;
-
-    try {
-      //검색
-      let posts: Post[];
-      if (category && keyword) {
-        posts = await this.postService.getPostsByKeywordAndCategory(
-          page2,
-          keyword,
-          category,
-          "온라인"
-        );
-        return res.send({ result: posts });
-      } else if (category) {
-        posts = await this.postService.getPostsByCategory(
-          page2,
-          category,
-          "온라인"
-        );
-        return res.send({ result: posts });
-      } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(
-          page2,
-          keyword,
-          "온라인"
-        );
-      } else {
-        posts = await this.postService.getPostsByMeeting(page2, "온라인");
-      }
-      return res.send({ result: posts });
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
-  };
-
-  //게시글 오프라인
-  private getOfflinePosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1";
-    const page2: number = +page;
-    const category = req.query.category as string;
-    const keyword = req.query.keyword as string;
-    try {
-      //검색
-      let posts: Post[];
-      if (category && keyword) {
-        posts = await this.postService.getPostsByKeywordAndCategory(
-          page2,
-          keyword,
-          category,
-          "오프라인"
-        );
-        return res.send({ result: posts });
-      } else if (category) {
-        posts = await this.postService.getPostsByCategory(
-          page2,
-          category,
-          "오프라인"
-        );
-        return res.send({ result: posts });
-      } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(
-          page2,
-          keyword,
-          "오프라인"
-        );
-      } else {
-        posts = await this.postService.getPostsByMeeting(page2, "오프라인");
-      }
+      const posts: Post[] = await this.postService.getPosts(
+        page2,
+        meeting,
+        category,
+        keyword
+      );
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
@@ -225,7 +135,6 @@ class PostController implements Controller {
 
   private getLocationSearch: RequestHandler = async (req, res, next) => {
     const next_page_token = req.query.token as string;
-    const location = req.query.location as string;
     const keyword = req.query.keyword as string;
 
     try {
@@ -235,10 +144,10 @@ class PostController implements Controller {
         );
         return res.send(locations.data);
       }
-      const locations = await this.mapService.getLocationSearch(
-        location,
-        keyword
-      );
+      if (!keyword) {
+        next(new Error("검색어가 없습니다."));
+      }
+      const locations = await this.mapService.getLocationSearch(keyword);
       return res.send(locations.data);
     } catch (err) {
       console.log(err);
@@ -247,14 +156,30 @@ class PostController implements Controller {
   };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
+    const center = req.query.center as string;
+    if (center) {
+      try {
+        const centerNum = await this.mapService.getLatLng(center);
+        const Lat = centerNum.Lat;
+        const Lng = centerNum.Lng;
+        const posts = await this.mapService.getMapPostsByCenter(Lat, Lng);
+        const randomziedPosts = await this.mapService.randomizeLocation(posts);
+        return res.send({ result: randomziedPosts });
+      } catch (err) {
+        console.log(err);
+        next(err);
+      }
+    }
+
+    // 혹시 모르니까 살려두는 Bounds로 포스트 리스트 얻기
     // sw가 낮은 쪽, ne가 높은쪽 *한국기준
     // /posts/map?sw=5,6&ne=150,160
     const sw = req.query.sw as string;
     const ne = req.query.ne as string;
     try {
       // bounds를 4개 숫자로 만들기 동 서 남 북
-      const swNum = await this.mapService.getBounds(sw);
-      const neNum = await this.mapService.getBounds(ne);
+      const swNum = await this.mapService.getLatLng(sw);
+      const neNum = await this.mapService.getLatLng(ne);
       // lat은 남북 높을수록 북쪽
       // lng은 동서 높을수록 동쪽 한국기준
       const sBound = swNum.Lat;
@@ -262,13 +187,14 @@ class PostController implements Controller {
       const wBound = swNum.Lng;
       const eBound = neNum.Lng;
 
-      const posts = await this.mapService.getPostsInMap(
+      const posts = await this.mapService.getMapPostsByBounds(
         sBound,
         nBound,
         wBound,
         eBound
       );
-      return res.send({ result: posts });
+      const randomziedPosts = await this.mapService.randomizeLocation(posts);
+      return res.send({ result: randomziedPosts });
     } catch (err) {
       console.log(err);
       next(err);
