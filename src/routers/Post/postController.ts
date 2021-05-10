@@ -34,8 +34,6 @@ class PostController implements Controller {
       validation(this.dto, true),
       this.updatePost
     );
-    this.router.get(`${this.path}/online`, this.getOnlinePosts); //온라인 게시물 카테고리 별, 검색
-    this.router.get(`${this.path}/offline`, this.getOfflinePosts); //오프라인 게시물 카테고리 별, 검색
     this.router.get(`${this.path}/location`, this.getLocationSearch);
     this.router.get(`${this.path}/map`, this.getPostsInMap);
     this.router.post(
@@ -50,7 +48,7 @@ class PostController implements Controller {
     ); //침여자 삭제하기
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
     this.router.get(`${this.path}/:postId`, this.getPostById); //게시글 상세
-    this.router.get(this.path, this.getAllPosts); //게시글 전체
+    this.router.get(this.path, this.getPosts); //게시글 보기(검색 포함)
   }
 
   //게시글 작성
@@ -113,109 +111,21 @@ class PostController implements Controller {
     }
   };
 
-  //게시글 전체보기 및 검색하기
-  private getAllPosts: RequestHandler = async (req, res, next) => {
+  //게시글 보기(검색 포함)
+  private getPosts: RequestHandler = async (req, res, next) => {
     const page = req.query.page || "1";
     const page2: number = +page;
+    const meeting = req.query.meeting as string;
     const category = req.query.category as string;
-    const keyword = req.query.keyword as string;
+    const keyword = (req.query.keyword as string) || "";
 
     try {
-      let posts: Post[];
-      if (category && keyword) {
-        posts = await this.postService.getAllPostsByKeywordAndCategory(
-          page2,
-          keyword,
-          category
-        );
-      } else if (category) {
-        posts = await this.postService.getAllPostsByCategory(page2, category);
-      } else if (keyword) {
-        posts = await this.postService.getAllPostsByKeyword(page2, keyword);
-      } else {
-        posts = await this.postService.getAllPosts(page2);
-      }
-      return res.send({ result: posts });
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
-  };
-
-  //게시글 온라인
-  private getOnlinePosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1";
-    const page2: number = +page;
-    const category = req.query.category as string;
-    const keyword = req.query.keyword as string;
-
-    try {
-      //검색
-      let posts: Post[];
-      if (category && keyword) {
-        posts = await this.postService.getPostsByKeywordAndCategory(
-          page2,
-          keyword,
-          category,
-          "온라인"
-        );
-        return res.send({ result: posts });
-      } else if (category) {
-        posts = await this.postService.getPostsByCategory(
-          page2,
-          category,
-          "온라인"
-        );
-        return res.send({ result: posts });
-      } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(
-          page2,
-          keyword,
-          "온라인"
-        );
-      } else {
-        posts = await this.postService.getPostsByMeeting(page2, "온라인");
-      }
-      return res.send({ result: posts });
-    } catch (err) {
-      console.log(err);
-      next(err);
-    }
-  };
-
-  //게시글 오프라인
-  private getOfflinePosts: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1";
-    const page2: number = +page;
-    const category = req.query.category as string;
-    const keyword = req.query.keyword as string;
-    try {
-      //검색
-      let posts: Post[];
-      if (category && keyword) {
-        posts = await this.postService.getPostsByKeywordAndCategory(
-          page2,
-          keyword,
-          category,
-          "오프라인"
-        );
-        return res.send({ result: posts });
-      } else if (category) {
-        posts = await this.postService.getPostsByCategory(
-          page2,
-          category,
-          "오프라인"
-        );
-        return res.send({ result: posts });
-      } else if (keyword) {
-        posts = await this.postService.getPostsByKeyword(
-          page2,
-          keyword,
-          "오프라인"
-        );
-      } else {
-        posts = await this.postService.getPostsByMeeting(page2, "오프라인");
-      }
+      const posts: Post[] = await this.postService.getPosts(
+        page2,
+        meeting,
+        category,
+        keyword
+      );
       return res.send({ result: posts });
     } catch (err) {
       console.log(err);
