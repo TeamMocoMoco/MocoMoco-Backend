@@ -38,13 +38,18 @@ class RoomService {
   };
 
   getRooms = async (userId: string): Promise<Room[]> => {
-    const rooms = await this.roomModel
-      .find({
-        $or: [{ admin: userId }, { participant: userId }],
-      })
-      .populate("participant", userInfo)
-      .populate("admin", userInfo);
-    return rooms;
+    try {
+      const rooms = await this.roomModel
+        .find({
+          $or: [{ admin: userId }, { participant: userId }],
+        })
+        .populate("participant name userImg")
+        .populate("admin name userImg")
+        .populate("lastChat")
+      return rooms;
+    } catch (err) {
+      throw new Error(err);
+    }
   };
 
   getRoomsLastChat = async (rooms: Room[]): Promise<(Chat | Object)[]> => {
