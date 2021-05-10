@@ -242,14 +242,30 @@ class PostController implements Controller {
   };
 
   private getPostsInMap: RequestHandler = async (req, res, next) => {
+    const center = req.query.center as string;
+    if (center) {
+      try {
+        const centerNum = await this.mapService.getLatLng(center)
+        const Lat = centerNum.Lat
+        const Lng = centerNum.Lng
+        const posts = await this.mapService.getMapPostsByCenter(Lat, Lng)
+        const randomziedPosts = await this.mapService.randomizeLocation(posts)
+        return res.send({ result: randomziedPosts })
+      } catch (err) {
+        console.log(err)
+        next(err)
+      }
+    }
+
+    // 혹시 모르니까 살려두는 Bounds로 포스트 리스트 얻기
     // sw가 낮은 쪽, ne가 높은쪽 *한국기준
     // /posts/map?sw=5,6&ne=150,160
     const sw = req.query.sw as string;
     const ne = req.query.ne as string;
     try {
       // bounds를 4개 숫자로 만들기 동 서 남 북
-      const swNum = await this.mapService.getBounds(sw);
-      const neNum = await this.mapService.getBounds(ne);
+      const swNum = await this.mapService.getLatLng(sw);
+      const neNum = await this.mapService.getLatLng(ne);
       // lat은 남북 높을수록 북쪽
       // lng은 동서 높을수록 동쪽 한국기준
       const sBound = swNum.Lat;
@@ -257,13 +273,14 @@ class PostController implements Controller {
       const wBound = swNum.Lng;
       const eBound = neNum.Lng;
 
-      const posts = await this.mapService.getPostsInMap(
+      const posts = await this.mapService.getMapPostsByBounds(
         sBound,
         nBound,
         wBound,
         eBound
       );
-      return res.send({ result: posts });
+      const randomziedPosts = await this.mapService.randomizeLocation(posts)
+      return res.send({ result: randomziedPosts })
     } catch (err) {
       console.log(err);
       next(err);
