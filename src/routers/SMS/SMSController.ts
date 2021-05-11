@@ -28,7 +28,7 @@ export default class SMSController implements Controller {
   }
 
   // 인증번호 전송
-  private sendSMS: RequestHandler = async (req, res, next) => {
+  sendSMS: RequestHandler = async (req, res, next) => {
     const phoneData: SMS = req.body;
     try {
       await this.smsService.sendSMS(phoneData);
