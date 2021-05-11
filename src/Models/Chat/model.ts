@@ -1,5 +1,5 @@
-import { Schema, model, Model, Types } from "mongoose";
-import Chat from "./interface";
+import { Schema, model, Model, Types } from "mongoose"
+import Chat from "./interface"
 
 const ChatSchema = new Schema(
   {
@@ -10,7 +10,7 @@ const ChatSchema = new Schema(
   {
     timestamps: true,
   }
-);
+)
 
-const PostModel: Model<Chat> = model("chat", ChatSchema);
-export default PostModel;
+const ChatModel: Model<Chat> = model("chat", ChatSchema)
+export default ChatModel
