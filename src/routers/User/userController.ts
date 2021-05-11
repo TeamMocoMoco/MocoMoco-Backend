@@ -74,8 +74,8 @@ export default class UserController implements Controller {
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
     try {
-      const user = await this.userService.updateUser({ ...userUpdateData, userImg: imgUrl }, userId)
-      return res.send({ result: user })
+      await this.userService.updateUser({ ...userUpdateData, userImg: imgUrl }, userId)
+      return res.send({ result: "success" })
     } catch (err) {
       console.log(err)
       next(err)
