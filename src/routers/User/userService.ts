@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken"
 export default class UserService {
   private userModel = UserModel
   private postModel = PostModel
-  constructor() {}
+  constructor() { }
 
   createUser = async (userData: User, phoneData: string): Promise<User> => {
     const userByPhone = await this.userModel.findOne({ phone: phoneData })
@@ -32,6 +32,20 @@ export default class UserService {
     )
 
     return user
+  }
+
+  checkDelete = async (userId: string): Promise<Boolean> => {
+    const post = await this.postModel
+      .find({ user: userId })
+      .sort("-dueDate")
+
+    const duration = 9 * 60 * 60 * 1000;
+    const timeDiff = (post[0].dueDate.getTime() - duration) - Date.now()
+    if (timeDiff > 0) {
+      // 아직 dueDate가 지나지 않은 post가 있기 때문에 삭제가 되면 안됨
+      return false
+    }
+    return true
   }
 
   getUser = async (userId: string): Promise<User> => {

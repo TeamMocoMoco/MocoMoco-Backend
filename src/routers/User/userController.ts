@@ -32,6 +32,12 @@ export default class UserController implements Controller {
       upload.single("img"),
       this.updateUser
     )
+    this.router.delete(
+      `${this.path}`,
+      validation(this.dto, true),
+      JwtValidation,
+      this.deleteUser
+    )
     this.router.get(`${this.path}`, JwtValidation, this.getMyPage)
     this.router.get(`${this.path}/:userId`, this.getProfile)
     this.router.get(`${this.path}/admin/:userId`, this.getMyPost)
@@ -74,6 +80,28 @@ export default class UserController implements Controller {
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
     try {
       const user = await this.userService.updateUser({ ...userUpdateData, userImg: imgUrl }, userId)
+      return res.send({ result: user })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  }
+
+  // 유저 정보 업데이트
+  private deleteUser: RequestHandler = async (req, res, next) => {
+    const userId = res.locals.user
+
+    if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
+    try {
+      const result = await this.userService.checkDelete(userId)
+      if (result === false) next(new Error("아직 진행중인 글이 있습니다."))
+      const user = await this.userService.updateUser({
+        name: "알수없는사용자",
+        phone: "01000000000",
+        role: "알수없는역할",
+        introduce: "",
+        userImg: "https://mocomoco.s3.amazonaws.com/original/1620694702756profile_img.png"
+      }, userId)
       return res.send({ result: user })
     } catch (err) {
       console.log(err)
