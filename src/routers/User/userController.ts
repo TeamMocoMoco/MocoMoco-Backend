@@ -32,9 +32,10 @@ export default class UserController implements Controller {
       upload.single("img"),
       this.updateUser
     )
-    this.router.get(`${this.path}/admin`, JwtValidation, this.getMyPost)
-    this.router.get(`${this.path}/participant`, JwtValidation, this.getPareticipatePost)
     this.router.get(`${this.path}`, JwtValidation, this.getMyPage)
+    this.router.get(`${this.path}/:userId`, this.getProfile)
+    this.router.get(`${this.path}/admin/:userId`, this.getMyPost)
+    this.router.get(`${this.path}/participant/:userId`, this.getPareticipatePost)
   }
 
   // 유저 생성
@@ -93,18 +94,41 @@ export default class UserController implements Controller {
     }
   }
 
-  // 내가 만든 post
+  // 다른 사용자 정보 가지고 오기
+  private getProfile: RequestHandler = async (req, res, next) => {
+    const { userId } = req.params
+    if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
+    try {
+      const user = await this.userService.getUser(userId)
+      return res.send({ result: user })
+    } catch (err) {
+      console.log(err)
+      next(err)
+    }
+  }
+
+  // 사용자가 만든 post
   private getMyPost: RequestHandler = async (req, res, next) => {
-    const userId = res.locals.user
+    const myId = res.locals.user
+    const { userId } = req.params
     const { active } = req.query
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
     try {
+      if (userId) {
+        if (active) {
+          const activePost = await this.userService.getUserActivePost(userId)
+          return res.send({ result: activePost })
+        }
+        const deactivePost = await this.userService.getUserDeactivePost(userId)
+        return res.send({ result: deactivePost })
+      }
+
       if (active) {
-        const activePost = await this.userService.getUserActivePost(userId)
+        const activePost = await this.userService.getUserActivePost(myId)
         return res.send({ result: activePost })
       }
-      const deactivePost = await this.userService.getUserDeactivePost(userId)
+      const deactivePost = await this.userService.getUserDeactivePost(myId)
       return res.send({ result: deactivePost })
     } catch (err) {
       console.log(err)
@@ -112,17 +136,27 @@ export default class UserController implements Controller {
     }
   }
 
-  // 내가 참여하는 post
+  // 사용자가 참여하는 post
   private getPareticipatePost: RequestHandler = async (req, res, next) => {
-    const userId = res.locals.user
+    const myId = res.locals.user
+    const { userId } = req.params
     const { active } = req.query
+
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
     try {
+      if (userId) {
+        if (active) {
+          const activePost = await this.userService.getParticipantsActivePost(userId)
+          return res.send({ result: activePost })
+        }
+        const deactivPost = await this.userService.getParticipantsDeactivePost(userId)
+        return res.send({ result: deactivPost })
+      }
       if (active) {
-        const activePost = await this.userService.getParticipantsActivePost(userId)
+        const activePost = await this.userService.getParticipantsActivePost(myId)
         return res.send({ result: activePost })
       }
-      const deactivPost = await this.userService.getParticipantsDeactivePost(userId)
+      const deactivPost = await this.userService.getParticipantsDeactivePost(myId)
       return res.send({ result: deactivPost })
     } catch (err) {
       console.log(err)
