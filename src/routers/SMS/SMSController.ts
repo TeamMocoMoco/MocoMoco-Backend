@@ -8,7 +8,7 @@ export default class SMSController implements Controller {
   public path = "/SMS";
   public router = express.Router();
   private dto = SMSDTO;
-  private smsService;
+  public smsService;
   constructor() {
     this.initializeRoutes();
     this.smsService = new SMSService();
