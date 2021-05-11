@@ -120,4 +120,16 @@ export default class PostService {
       { $pull: { participants: participant._id } }
     );
   };
+
+  updatePostStatus = async (postId: string, userId: string): Promise<void> => {
+    const post = await this.postModel.findOneAndUpdate(
+      {
+        _id: postId,
+        user: userId,
+      },
+      { status: false },
+      { new: true }
+    );
+    if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
+  };
 }
