@@ -89,7 +89,7 @@ export default class UserController implements Controller {
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
     try {
       const result = await this.userService.checkDelete(userId)
-      if (result === false) next(new Error("아직 진행중인 글이 있습니다."))
+      if (result === false) return new Error("아직 진행중인 글이 있습니다.")
       const user = await this.userService.updateUser(
         {
           name: "알수없는사용자",
