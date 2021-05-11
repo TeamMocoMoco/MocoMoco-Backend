@@ -5,13 +5,17 @@ import jwt from "jsonwebtoken"
 export default class UserService {
   private userModel = UserModel
   private postModel = PostModel
-  constructor() {}
+  constructor() { }
 
   createUser = async (userData: User, phoneData: string): Promise<User> => {
     const userByPhone = await this.userModel.findOne({ phone: phoneData })
     if (userByPhone) throw new Error("이미 존재하는 번호입니다")
 
-    const createUser = new this.userModel({ ...userData, phone: phoneData })
+    const createUser = new this.userModel({
+      ...userData,
+      phone: phoneData,
+      userImg: "https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620694702756profile_img.png"
+    })
     await createUser.save()
     return createUser
   }
