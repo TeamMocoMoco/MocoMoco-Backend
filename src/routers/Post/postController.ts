@@ -33,6 +33,11 @@ export default class PostController implements Controller {
       validation(this.dto, true),
       this.updatePost
     );
+    this.router.patch(
+      `${this.path}/:postId/status`,
+      JwtValidation,
+      this.updatePostStatus
+    ); //게시글 마감
     this.router.get(`${this.path}/location`, this.getLocationSearch);
     this.router.get(`${this.path}/map`, this.getPostsInMap);
     this.router.post(
@@ -200,6 +205,21 @@ export default class PostController implements Controller {
     try {
       await this.postService.deleteParticipant(postId, userId, participantId);
       return res.send({ result: "성공적으로 참가자를 삭제했습니다." });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
+  //게시글 마감(status true -> false)
+  private updatePostStatus: RequestHandler = async (req, res, next) => {
+    const { postId } = req.params;
+    const userId = res.locals.user;
+    if (!Types.ObjectId.isValid(postId))
+      next(new Error("오브젝트 아이디가 아닙니다."));
+    try {
+      await this.postService.updatePostStatus(postId, userId);
+      return res.send({ result: "success" });
     } catch (err) {
       console.log(err);
       next(err);
