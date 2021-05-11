@@ -32,12 +32,7 @@ export default class UserController implements Controller {
       upload.single("img"),
       this.updateUser
     )
-    this.router.delete(
-      `${this.path}`,
-      validation(this.dto, true),
-      JwtValidation,
-      this.deleteUser
-    )
+    this.router.delete(`${this.path}`, validation(this.dto, true), JwtValidation, this.deleteUser)
     this.router.get(`${this.path}`, JwtValidation, this.getMyPage)
     this.router.get(`${this.path}/:userId`, this.getProfile)
     this.router.get(`${this.path}/admin/:userId`, this.getMyPost)
@@ -95,13 +90,16 @@ export default class UserController implements Controller {
     try {
       const result = await this.userService.checkDelete(userId)
       if (result === false) next(new Error("아직 진행중인 글이 있습니다."))
-      const user = await this.userService.updateUser({
-        name: "알수없는사용자",
-        phone: "01000000000",
-        role: "알수없는역할",
-        introduce: "",
-        userImg: "https://mocomoco.s3.amazonaws.com/original/1620694702756profile_img.png"
-      }, userId)
+      const user = await this.userService.updateUser(
+        {
+          name: "알수없는사용자",
+          phone: "01000000000",
+          role: "알수없는역할",
+          introduce: "",
+          userImg: "https://mocomoco.s3.amazonaws.com/original/1620694702756profile_img.png",
+        },
+        userId
+      )
       return res.send({ result: user })
     } catch (err) {
       console.log(err)
@@ -145,18 +143,18 @@ export default class UserController implements Controller {
     try {
       if (userId) {
         if (active) {
-          const activePost = await this.userService.getUserActivePost(userId)
+          const activePost = await this.userService.getUserPost(userId, true)
           return res.send({ result: activePost })
         }
-        const deactivePost = await this.userService.getUserDeactivePost(userId)
+        const deactivePost = await this.userService.getUserPost(userId, false)
         return res.send({ result: deactivePost })
       }
 
       if (active) {
-        const activePost = await this.userService.getUserActivePost(myId)
+        const activePost = await this.userService.getUserPost(myId, true)
         return res.send({ result: activePost })
       }
-      const deactivePost = await this.userService.getUserDeactivePost(myId)
+      const deactivePost = await this.userService.getUserPost(myId, false)
       return res.send({ result: deactivePost })
     } catch (err) {
       console.log(err)
@@ -174,17 +172,17 @@ export default class UserController implements Controller {
     try {
       if (userId) {
         if (active) {
-          const activePost = await this.userService.getParticipantsActivePost(userId)
+          const activePost = await this.userService.getParticipantsPost(userId, true)
           return res.send({ result: activePost })
         }
-        const deactivPost = await this.userService.getParticipantsDeactivePost(userId)
+        const deactivPost = await this.userService.getParticipantsPost(userId, false)
         return res.send({ result: deactivPost })
       }
       if (active) {
-        const activePost = await this.userService.getParticipantsActivePost(myId)
+        const activePost = await this.userService.getParticipantsPost(myId, true)
         return res.send({ result: activePost })
       }
-      const deactivPost = await this.userService.getParticipantsDeactivePost(myId)
+      const deactivPost = await this.userService.getParticipantsPost(myId, false)
       return res.send({ result: deactivPost })
     } catch (err) {
       console.log(err)
