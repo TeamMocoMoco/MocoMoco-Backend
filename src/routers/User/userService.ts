@@ -55,16 +55,16 @@ export default class UserService {
     if (!user) throw new Error("없는 유저입니다")
     return user
   }
-  getUserPost = async (userId: string, active: boolean = true): Promise<Post[]> => {
+  getUserPost = async (userId: string, status: boolean = true): Promise<Post[]> => {
     const userActivePost = await this.postModel
-      .find({ $and: [{ user: userId }, { status: active }] })
+      .find({ $and: [{ user: userId }, { status: status }] })
       .sort("-createdAt")
     return userActivePost
   }
 
-  getParticipantsPost = async (userId: string, active: boolean = true): Promise<Post[]> => {
+  getParticipantsPost = async (userId: string, status: boolean = true): Promise<Post[]> => {
     const participantsPost = await this.postModel
-      .find({ $and: [{ participants: userId }, { status: active }] })
+      .find({ $and: [{ participants: userId }, { status: status }] })
       .sort("-createdAt")
     return participantsPost
   }
