@@ -8,6 +8,8 @@ export default class PostService {
   constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
+    if (new Date(postData.startDate) <= new Date())
+      throw new Error("지난 날짜를 시작일로 설정할 수 없습니다.");
     const newPost = new this.postModel({ ...postData, user: userId });
     await newPost.save();
     return newPost;
