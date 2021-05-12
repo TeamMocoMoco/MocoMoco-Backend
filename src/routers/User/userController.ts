@@ -34,9 +34,9 @@ export default class UserController implements Controller {
     )
     this.router.delete(`${this.path}`, validation(this.dto, true), JwtValidation, this.deleteUser)
     this.router.get(`${this.path}`, JwtValidation, this.getMyPage)
+    this.router.get(`${this.path}/admin/:userId`, this.getUserPost)
+    this.router.get(`${this.path}/participant/:userId`, this.getParticipantPost)
     this.router.get(`${this.path}/:userId`, this.getProfile)
-    this.router.get(`${this.path}/admin/:userId`, this.getMyPost)
-    this.router.get(`${this.path}/participant/:userId`, this.getPareticipatePost)
   }
 
   // 유저 생성
@@ -134,28 +134,20 @@ export default class UserController implements Controller {
   }
 
   // 사용자가 만든 post
-  private getMyPost: RequestHandler = async (req, res, next) => {
-    const myId = res.locals.user
+  private getUserPost: RequestHandler = async (req, res, next) => {
     const { userId } = req.params
-    const { active } = req.query
+    const { status } = req.query
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
     try {
-      if (userId) {
-        if (active) {
-          const activePost = await this.userService.getUserPost(userId, true)
-          return res.send({ result: activePost })
-        }
+      if (status === "true") {
+        const activePost = await this.userService.getUserPost(userId, true)
+        return res.send({ result: activePost })
+      } else if (status === "false") {
         const deactivePost = await this.userService.getUserPost(userId, false)
         return res.send({ result: deactivePost })
       }
-
-      if (active) {
-        const activePost = await this.userService.getUserPost(myId, true)
-        return res.send({ result: activePost })
-      }
-      const deactivePost = await this.userService.getUserPost(myId, false)
-      return res.send({ result: deactivePost })
+      return next(new Error("잘못된 status입니다."));
     } catch (err) {
       console.log(err)
       next(err)
@@ -163,27 +155,20 @@ export default class UserController implements Controller {
   }
 
   // 사용자가 참여하는 post
-  private getPareticipatePost: RequestHandler = async (req, res, next) => {
-    const myId = res.locals.user
+  private getParticipantPost: RequestHandler = async (req, res, next) => {
     const { userId } = req.params
-    const { active } = req.query
+    const { status } = req.query
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
     try {
-      if (userId) {
-        if (active) {
-          const activePost = await this.userService.getParticipantsPost(userId, true)
-          return res.send({ result: activePost })
-        }
-        const deactivPost = await this.userService.getParticipantsPost(userId, false)
-        return res.send({ result: deactivPost })
-      }
-      if (active) {
-        const activePost = await this.userService.getParticipantsPost(myId, true)
+      if (status === "true") {
+        const activePost = await this.userService.getParticipantsPost(userId, true)
         return res.send({ result: activePost })
+      } else if (status === "false") {
+        const deactivePost = await this.userService.getParticipantsPost(userId, false)
+        return res.send({ result: deactivePost })
       }
-      const deactivPost = await this.userService.getParticipantsPost(myId, false)
-      return res.send({ result: deactivPost })
+      return next(new Error("잘못된 status입니다."));
     } catch (err) {
       console.log(err)
       next(err)
