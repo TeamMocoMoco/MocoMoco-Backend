@@ -14,8 +14,7 @@ export default class UserService {
 
     const createUser = new this.userModel({
       ...userData,
-      phone: phoneData,
-      userImg: "https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620694702756profile_img.png"
+      phone: phoneData
     })
     await createUser.save()
     return createUser
