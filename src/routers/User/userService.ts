@@ -1,5 +1,6 @@
 import { User, UserModel } from "../../models/User/"
 import { Post, PostModel } from "../../models/Post/"
+import { userInfo } from "../config";
 import jwt from "jsonwebtoken"
 
 export default class UserService {
@@ -55,17 +56,26 @@ export default class UserService {
     if (!user) throw new Error("없는 유저입니다")
     return user
   }
-  getUserPost = async (userId: string, status: boolean = true): Promise<Post[]> => {
+
+  getUserPost = async (page2: number, userId: string, status: boolean = true): Promise<Post[]> => {
     const userActivePost = await this.postModel
       .find({ $and: [{ user: userId }, { status: status }] })
+      .populate("user", userInfo)
+      .populate("participants", userInfo)
       .sort("-createdAt")
+      .skip((page2 - 1) * 5)
+      .limit(5);
     return userActivePost
   }
 
-  getParticipantsPost = async (userId: string, status: boolean = true): Promise<Post[]> => {
+  getParticipantsPost = async (page2: number, userId: string, status: boolean = true): Promise<Post[]> => {
     const participantsPost = await this.postModel
       .find({ $and: [{ participants: userId }, { status: status }] })
+      .populate("user", userInfo)
+      .populate("participants", userInfo)
       .sort("-createdAt")
+      .skip((page2 - 1) * 5)
+      .limit(5);
     return participantsPost
   }
 }

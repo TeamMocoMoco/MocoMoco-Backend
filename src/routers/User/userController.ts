@@ -135,16 +135,18 @@ export default class UserController implements Controller {
 
   // 사용자가 만든 post
   private getUserPost: RequestHandler = async (req, res, next) => {
+    const page = req.query.page || "1";
+    const page2: number = +page;
     const { userId } = req.params
     const { status } = req.query
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
     try {
       if (status === "true") {
-        const activePost = await this.userService.getUserPost(userId, true)
+        const activePost = await this.userService.getUserPost(page2, userId, true)
         return res.send({ result: activePost })
       } else if (status === "false") {
-        const deactivePost = await this.userService.getUserPost(userId, false)
+        const deactivePost = await this.userService.getUserPost(page2, userId, false)
         return res.send({ result: deactivePost })
       }
       return next(new Error("잘못된 status입니다."));
@@ -156,16 +158,18 @@ export default class UserController implements Controller {
 
   // 사용자가 참여하는 post
   private getParticipantPost: RequestHandler = async (req, res, next) => {
+    const page = req.query.page || "1";
+    const page2: number = +page;
     const { userId } = req.params
     const { status } = req.query
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다"))
     try {
       if (status === "true") {
-        const activePost = await this.userService.getParticipantsPost(userId, true)
+        const activePost = await this.userService.getParticipantsPost(page2, userId, true)
         return res.send({ result: activePost })
       } else if (status === "false") {
-        const deactivePost = await this.userService.getParticipantsPost(userId, false)
+        const deactivePost = await this.userService.getParticipantsPost(page2, userId, false)
         return res.send({ result: deactivePost })
       }
       return next(new Error("잘못된 status입니다."));
