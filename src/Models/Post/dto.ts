@@ -37,6 +37,9 @@ class PostDto {
   @IsString()
   readonly address: string;
 
+  @IsString()
+  readonly address_name: string;
+
   @IsDateString()
   readonly startDate: Date;
 
