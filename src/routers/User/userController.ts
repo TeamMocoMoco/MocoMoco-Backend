@@ -44,6 +44,15 @@ export default class UserController implements Controller {
     const userData: User = req.body
     const phoneData: string = res.locals.phone
     try {
+      if (userData.role === '개발자') {
+        userData.userImg = 'https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916240861developer.png'
+      } else if (userData.role === '디자이너') {
+        userData.userImg = 'https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916235923designer.png'
+      } else if (userData.role === '기획자') {
+        userData.userImg = 'https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916218747director.png'
+      } else {
+        next(new Error("잘못된 역할입니다."))
+      }
       const user = await this.userService.createUser(userData, phoneData)
       return res.send({ result: user })
     } catch (err) {
