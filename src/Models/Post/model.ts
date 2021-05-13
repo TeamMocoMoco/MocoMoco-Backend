@@ -13,6 +13,7 @@ const PostSchema = new Schema(
     category: { type: String, required: true },
     hashtag: [String],
     location: [Number],
+    address: { type: String },
     startDate: { type: Date },
     dueDate: { type: Date },
     participants: { type: [{ type: Types.ObjectId, ref: "user" }] },
