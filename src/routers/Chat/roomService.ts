@@ -78,6 +78,14 @@ class RoomService {
       .populate("admin", userInfo);
     return room;
   };
+
+  getParticipants = async (roomInfo: Room): Promise<Post | null> => {
+    const post = await this.postModel
+      .findById(roomInfo.postId)
+      .populate("participants", userInfo)
+      .select("participants");
+    return post;
+  };
 }
 
 export default RoomService;
