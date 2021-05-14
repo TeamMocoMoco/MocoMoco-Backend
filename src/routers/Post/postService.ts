@@ -8,6 +8,8 @@ export default class PostService {
   constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
+    if (new Date(postData.startDate) <= new Date())
+      throw new Error("지난 날짜를 시작일로 설정할 수 없습니다.");
     const newPost = new this.postModel({ ...postData, user: userId });
     await newPost.save();
     return newPost;
@@ -119,5 +121,17 @@ export default class PostService {
       { _id: post._id },
       { $pull: { participants: participant._id } }
     );
+  };
+
+  updatePostStatus = async (postId: string, userId: string): Promise<void> => {
+    const post = await this.postModel.findOneAndUpdate(
+      {
+        _id: postId,
+        user: userId,
+      },
+      { status: false },
+      { new: true }
+    );
+    if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
   };
 }

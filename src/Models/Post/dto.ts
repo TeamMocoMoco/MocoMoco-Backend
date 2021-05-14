@@ -34,6 +34,12 @@ class PostDto {
   @ArrayMaxSize(2)
   readonly location: number[];
 
+  @IsString()
+  readonly address: string;
+
+  @IsString()
+  readonly address_name: string;
+
   @IsDateString()
   readonly startDate: Date;
 

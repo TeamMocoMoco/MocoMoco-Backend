@@ -2,7 +2,7 @@ import express, { RequestHandler } from "express";
 import Controller from "../interfaces/controller";
 import { SMS, SMSDTO } from "../../models/SMS";
 import { validation } from "../../middlewares/validation";
-import SMSService from "./smsService";
+import SMSService from "./SMSService";
 
 export default class SMSController implements Controller {
   public path = "/SMS";

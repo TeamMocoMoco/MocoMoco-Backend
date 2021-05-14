@@ -55,7 +55,8 @@ export default class ChatController implements Controller {
       if (!roomInfo) throw new Error("Room이 없습니다.");
 
       const chat = await this.chatService.getChatById(roomId);
-      return res.send({ result: { roomInfo, chat } });
+      const participants = await this.roomService.getParticipants(roomInfo);
+      return res.send({ result: { roomInfo, chat, participants } });
     } catch (err) {
       console.log(err);
       next(err);

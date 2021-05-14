@@ -11,6 +11,8 @@ interface Post extends Document {
   category: string;
   hashtag: string[];
   location?: number[];
+  address?: string;
+  address_name?: string;
   startDate: Date;
   dueDate: Date;
   createdAt: Date;

@@ -1,17 +1,21 @@
 import { User, UserModel } from "../../models/User/"
 import { Post, PostModel } from "../../models/Post/"
+import { userInfo } from "../config";
 import jwt from "jsonwebtoken"
 
 export default class UserService {
   private userModel = UserModel
   private postModel = PostModel
-  constructor() {}
+  constructor() { }
 
   createUser = async (userData: User, phoneData: string): Promise<User> => {
     const userByPhone = await this.userModel.findOne({ phone: phoneData })
     if (userByPhone) throw new Error("이미 존재하는 번호입니다")
 
-    const createUser = new this.userModel({ ...userData, phone: phoneData })
+    const createUser = new this.userModel({
+      ...userData,
+      phone: phoneData
+    })
     await createUser.save()
     return createUser
   }
@@ -34,37 +38,43 @@ export default class UserService {
     return user
   }
 
+  checkDelete = async (userId: string): Promise<Boolean> => {
+    const post = await this.postModel.find({ user: userId }).sort("-dueDate")
+
+    const duration = 9 * 60 * 60 * 1000
+    const timeDiff = post[0].dueDate.getTime() - duration - Date.now()
+    if (timeDiff > 0) {
+      // 아직 dueDate가 지나지 않은 post가 있기 때문에 삭제가 되면 안됨
+      return false
+    }
+    return true
+  }
+
   getUser = async (userId: string): Promise<User> => {
     const user = await this.userModel.findById(userId)
     if (!user) throw new Error("없는 유저입니다")
     return user
   }
 
-  getUserDeactivePost = async (userId: string): Promise<Post[]> => {
-    const userDeactivePost = await this.postModel
-      .find({ $and: [{ user: userId }, { status: false }] })
-      .sort("-createdAt")
-    return userDeactivePost
-  }
-
-  getUserActivePost = async (userId: string): Promise<Post[]> => {
+  getUserPost = async (page2: number, userId: string, status: boolean = true): Promise<Post[]> => {
     const userActivePost = await this.postModel
-      .find({ $and: [{ user: userId }, { status: true }] })
+      .find({ $and: [{ user: userId }, { status: status }] })
+      .populate("user", userInfo)
+      .populate("participants", userInfo)
       .sort("-createdAt")
+      .skip((page2 - 1) * 5)
+      .limit(5);
     return userActivePost
   }
 
-  getParticipantsDeactivePost = async (userId: string): Promise<Post[]> => {
+  getParticipantsPost = async (page2: number, userId: string, status: boolean = true): Promise<Post[]> => {
     const participantsPost = await this.postModel
-      .find({ $and: [{ participants: userId }, { status: false }] })
+      .find({ $and: [{ participants: userId }, { status: status }] })
+      .populate("user", userInfo)
+      .populate("participants", userInfo)
       .sort("-createdAt")
+      .skip((page2 - 1) * 5)
+      .limit(5);
     return participantsPost
-  }
-
-  getParticipantsActivePost = async (userId: string): Promise<Post[]> => {
-    const participantsActivePost = await this.postModel
-      .find({ $and: [{ participants: userId }, { status: true }] })
-      .sort("-createdAt")
-    return participantsActivePost
   }
 }
