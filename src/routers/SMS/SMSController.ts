@@ -8,7 +8,7 @@ export default class SMSController implements Controller {
   public path = "/SMS";
   public router = express.Router();
   private dto = SMSDTO;
-  private smsService;
+  public smsService;
   constructor() {
     this.initializeRoutes();
     this.smsService = new SMSService();
@@ -28,7 +28,7 @@ export default class SMSController implements Controller {
   }
 
   // 인증번호 전송
-  private sendSMS: RequestHandler = async (req, res, next) => {
+  sendSMS: RequestHandler = async (req, res, next) => {
     const phoneData: SMS = req.body;
     try {
       await this.smsService.sendSMS(phoneData);
