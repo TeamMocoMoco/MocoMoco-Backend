@@ -2,9 +2,9 @@ import express, { RequestHandler } from "express"
 import Controller from "../interfaces/controller"
 import ChatService from "./chatService"
 import RoomService from "./roomService"
-import { Chat } from "../../models/Chat"
-import { Room } from "../../models/Room"
-import { JwtValidation } from "../../middlewares/validation"
+import { Chat, creatChatDto } from "../../models/Chat"
+import { Room, creatRoomDto } from "../../models/Room"
+import { JwtValidation, validation } from "../../middlewares/validation"
 import { Types } from "mongoose"
 
 export default class ChatController implements Controller {
@@ -21,9 +21,14 @@ export default class ChatController implements Controller {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/myroom`, JwtValidation, this.getRooms)
-    this.router.post(`${this.path}`, JwtValidation, this.createRoom)
+    this.router.post(`${this.path}`, JwtValidation, validation(creatRoomDto), this.createRoom)
     this.router.get(`${this.path}/:roomId`, JwtValidation, this.getRoomById)
-    this.router.post(`${this.path}/:roomId/chat`, JwtValidation, this.createChat)
+    this.router.post(
+      `${this.path}/:roomId/chat`,
+      JwtValidation,
+      validation(creatChatDto),
+      this.createChat
+    )
   }
 
   //방 만들기
@@ -35,7 +40,6 @@ export default class ChatController implements Controller {
       const roomId = await this.roomService.createRoom(roomData, userId)
       res.send({ result: roomId })
     } catch (err) {
-      console.log(err)
       next(err)
     }
   }
@@ -53,7 +57,6 @@ export default class ChatController implements Controller {
       const participants = await this.roomService.getParticipants(roomInfo)
       return res.send({ result: { roomInfo, chat, participants } })
     } catch (err) {
-      console.log(err)
       next(err)
     }
   }
@@ -73,7 +76,6 @@ export default class ChatController implements Controller {
       req.app.get("io").of("/chat").to(roomId).emit("chat", chat)
       return res.send({ result: "success" })
     } catch (err) {
-      console.log(err)
       next(err)
     }
   }
@@ -86,7 +88,6 @@ export default class ChatController implements Controller {
       // const chats = await this.roomService.getRoomsLastChat(rooms);
       return res.send({ result: { rooms: rooms } })
     } catch (err) {
-      console.log(err)
       next(err)
     }
   }
