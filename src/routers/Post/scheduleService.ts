@@ -1,16 +1,13 @@
-import { PostModel } from "../../models/Post";
+import { PostModel } from "../../models/Post"
 
 export default class ScheduleService {
-  private postModel;
+  private postModel
 
   constructor() {
-    this.postModel = PostModel;
+    this.postModel = PostModel
   }
   changeStatus = async (): Promise<void> => {
-    const real_date = new Date(Date.now());
-    await this.postModel.updateMany(
-      { startDate: { $lte: real_date } },
-      { $set: { status: false } }
-    );
-  };
+    const real_date = new Date(Date.now())
+    await this.postModel.updateMany({ startDate: { $lte: real_date } }, { $set: { status: false } })
+  }
 }
