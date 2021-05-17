@@ -20,7 +20,7 @@ export default class PostController implements Controller {
 
   private initializeRoutes() {
     //게시글 작성
-    this.router.post(this.path, JwtValidation, validation(PostDto), this.createPost)
+    this.router.post(this.path, JwtValidation, validation(PostDto, true), this.createPost)
     //게시글 수정
     this.router.patch(
       `${this.path}/:postId`,
