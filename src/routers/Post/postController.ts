@@ -1,6 +1,6 @@
 import express, { RequestHandler } from "express";
 import Controller from "../interfaces/controller";
-import { Post, PostDto } from "../../models/Post";
+import { Post, PostDto, ParticipantDto } from "../../models/Post";
 import { validation, JwtValidation } from "../../middlewares/validation";
 import PostService from "./postService";
 import MapService from "./mapService";
@@ -11,7 +11,7 @@ export default class PostController implements Controller {
   public router = express.Router();
   private postService;
   private mapService;
-  private dto = PostDto;
+
   constructor() {
     this.initializeRoutes();
     this.postService = new PostService();
@@ -23,14 +23,14 @@ export default class PostController implements Controller {
     this.router.post(
       this.path,
       JwtValidation,
-      validation(this.dto),
+      validation(PostDto),
       this.createPost
     );
     //게시글 수정
     this.router.patch(
       `${this.path}/:postId`,
       JwtValidation,
-      validation(this.dto, true),
+      validation(PostDto, true),
       this.updatePost
     );
     this.router.patch(
@@ -43,11 +43,13 @@ export default class PostController implements Controller {
     this.router.post(
       `${this.path}/:postId/participants`,
       JwtValidation,
+      validation(ParticipantDto),
       this.addParticipant
     ); //참여자 추가하기
     this.router.patch(
       `${this.path}/:postId/participants`,
       JwtValidation,
+      validation(ParticipantDto),
       this.deleteParticipant
     ); //침여자 삭제하기
     this.router.delete(`${this.path}/:postId`, JwtValidation, this.deletePost); //게시글 삭제
@@ -78,7 +80,6 @@ export default class PostController implements Controller {
       const post = await this.postService.getPostById(postId);
       return res.send({ result: post });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
@@ -95,7 +96,6 @@ export default class PostController implements Controller {
       await this.postService.updatePost(postUpdateData, userId, postId);
       return res.send({ result: "success" });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
@@ -133,7 +133,6 @@ export default class PostController implements Controller {
       );
       return res.send({ result: posts });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
@@ -156,7 +155,6 @@ export default class PostController implements Controller {
       const locations = await this.mapService.getLocationBySearch(keyword);
       return res.send(locations.data);
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
@@ -173,7 +171,6 @@ export default class PostController implements Controller {
         const randomziedPosts = await this.mapService.randomizeLocation(posts);
         return res.send({ result: randomziedPosts });
       } catch (err) {
-        console.log(err);
         next(err);
       }
     }
@@ -190,7 +187,6 @@ export default class PostController implements Controller {
       await this.postService.addParticipant(postId, userId, participantId);
       return res.send({ result: "성공적으로 참가자를 추가했습니다!" });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
@@ -206,7 +202,6 @@ export default class PostController implements Controller {
       await this.postService.deleteParticipant(postId, userId, participantId);
       return res.send({ result: "성공적으로 참가자를 삭제했습니다." });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
@@ -221,7 +216,6 @@ export default class PostController implements Controller {
       await this.postService.updatePostStatus(postId, userId);
       return res.send({ result: "success" });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };
