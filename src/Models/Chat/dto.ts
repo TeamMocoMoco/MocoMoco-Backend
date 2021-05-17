@@ -1,14 +1,14 @@
-import { IsString, IsMongoId } from "class-validator";
+import { IsString, IsMongoId } from "class-validator"
 
 class ChatDto {
   @IsMongoId()
-  readonly user: string;
+  readonly user: string
 
   @IsMongoId()
-  readonly roomId: string;
+  readonly roomId: string
 
   @IsString()
-  readonly content: string;
+  readonly content: string
 }
 
-export default ChatDto;
+export default ChatDto

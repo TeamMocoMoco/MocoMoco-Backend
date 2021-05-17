@@ -24,7 +24,12 @@ export default class UserController implements Controller {
       JwtPhoneValidation,
       this.createUser
     )
-    this.router.post(`${this.path}/login`, validation(this.dto, true), this.login)
+    this.router.post(
+      `${this.path}/login`,
+      JwtPhoneValidation,
+      validation(this.dto, true),
+      this.login
+    )
     this.router.patch(
       `${this.path}`,
       validation(this.dto, true),

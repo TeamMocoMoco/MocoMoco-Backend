@@ -39,7 +39,7 @@ export const JwtValidation: RequestHandler = async (req, res, next) => {
 
     const user = await UserModel.findById(userId)
     if (!user) {
-      next(new Error("사용자가 없습니다."))
+      throw new Error("사용자가 없습니다.")
     }
     res.locals.user = user && user._id.toString()
     next()
@@ -55,10 +55,10 @@ export const JwtPhoneValidation: RequestHandler = async (req, res, next) => {
     return
   }
   try {
-    const { phone } = jwt.verify(phonetoken, process.env.TOKEN_KEY || "token") as TokenData
-    const sms = await SMSModel.findOne({ phone: phone }).sort("-updatedAt")
+    const { userId } = jwt.verify(phonetoken, process.env.TOKEN_KEY || "token") as TokenData
+    const sms = await SMSModel.findOne({ phone: userId }).sort("-updatedAt")
     if (!sms) {
-      next(new Error("사용자가 없습니다."))
+      throw new Error("사용자가 없습니다.")
     } else {
       res.locals.phone = sms.phone
       next()

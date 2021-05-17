@@ -5,9 +5,10 @@ import {
   IsDateString,
   ArrayMaxSize,
   ArrayMinSize,
+  IsMongoId,
 } from "class-validator";
 
-class PostDto {
+export class PostDto {
   @IsString()
   readonly position: string;
 
@@ -47,4 +48,7 @@ class PostDto {
   readonly dueDate: Date;
 }
 
-export default PostDto;
+export class ParticipantDto {
+  @IsMongoId()
+  readonly participantId: string;
+}
