@@ -13,6 +13,7 @@ const PostSchema = new Schema(
     category: { type: String, required: true },
     hashtag: [String],
     location: [Number],
+    offLocation: [Number],
     address: { type: String },
     address_name: { type: String },
     startDate: { type: Date },

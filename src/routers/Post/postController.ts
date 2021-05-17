@@ -170,8 +170,7 @@ export default class PostController implements Controller {
         const Lat = centerNum.Lat;
         const Lng = centerNum.Lng;
         const posts = await this.mapService.getMapPostsByCenter(Lat, Lng);
-        const randomziedPosts = await this.mapService.randomizeLocation(posts);
-        return res.send({ result: randomziedPosts });
+        return res.send({ result: posts });
       } catch (err) {
         console.log(err);
         next(err);
