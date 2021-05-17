@@ -1,22 +1,24 @@
-import express, { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
-import Controller from "./routers/interfaces/controller";
-import morgan from "morgan";
-import "dotenv/config";
-import { Job } from "node-schedule";
-import { scheduleJob } from "./middlewares/schedule";
+import express, { Request, Response, NextFunction } from "express"
+import mongoose from "mongoose"
+import Controller from "./routers/interfaces/controller"
+import morgan from "morgan"
+import "dotenv/config"
+import { Job } from "node-schedule"
+import { scheduleJob } from "./middlewares/schedule"
+import helmet from "helmet"
+import hpp from "hpp"
 
 class App {
-  app: express.Application;
-  schedule: Job;
+  app: express.Application
+  schedule: Job
   constructor(controllers: Controller[]) {
-    this.app = express();
-    this.setDB();
-    this.setMiddleWare();
-    this.setRouter(controllers);
-    this.set404Error();
-    this.setError();
-    this.schedule = scheduleJob;
+    this.app = express()
+    this.setDB()
+    this.setMiddleWare()
+    this.setRouter(controllers)
+    this.set404Error()
+    this.setError()
+    this.schedule = scheduleJob
   }
   private setDB() {
     mongoose
@@ -30,34 +32,39 @@ class App {
         // pass: process.env.DB_PASSWORD,
       })
       .then(() => console.log("db connected"))
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
   }
   private setMiddleWare() {
-    this.app.use(express.urlencoded({ extended: false }));
-    this.app.use(express.json());
-    this.app.use(morgan("dev"));
+    this.app.use(express.urlencoded({ extended: false }))
+    this.app.use(express.json())
+
+    if (process.env.NODE_ENV === "production") {
+      this.app.use(morgan("combined"))
+      this.app.use(helmet({ contentSecurityPolicy: false }))
+      this.app.use(hpp())
+    } else {
+      this.app.use(morgan("dev"))
+    }
   }
   private setRouter(controllers: Controller[]) {
     this.app.get("/", (req, res) => {
-      res.send("hello");
-    });
+      res.send("hello")
+    })
     controllers.forEach((controller) => {
-      this.app.use("/", controller.router);
-    });
+      this.app.use("/", controller.router)
+    })
   }
   private set404Error() {
     this.app.use((req, res, _) => {
-      res.status(404).send("404");
-    });
+      res.status(404).send("404")
+    })
   }
   private setError() {
-    this.app.use(
-      (err: Error, req: Request, res: Response, next: NextFunction) => {
-        console.log(err);
-        res.status(500).send({ err: err.message });
-      }
-    );
+    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      console.log(err)
+      res.status(500).send({ err: err.message })
+    })
   }
 }
 
-export default App;
+export default App

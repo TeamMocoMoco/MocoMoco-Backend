@@ -1,12 +1,12 @@
 import { User, UserModel } from "../../models/User/"
 import { Post, PostModel } from "../../models/Post/"
-import { userInfo } from "../config";
+import { userInfo } from "../config"
 import jwt from "jsonwebtoken"
 
 export default class UserService {
   private userModel = UserModel
   private postModel = PostModel
-  constructor() { }
+  constructor() {}
 
   createUser = async (userData: User, phoneData: string): Promise<User> => {
     const userByPhone = await this.userModel.findOne({ phone: phoneData })
@@ -14,7 +14,7 @@ export default class UserService {
 
     const createUser = new this.userModel({
       ...userData,
-      phone: phoneData
+      phone: phoneData,
     })
     await createUser.save()
     return createUser
@@ -24,7 +24,7 @@ export default class UserService {
     const user = await this.userModel.findOne({ phone: phoneData })
     if (!user) throw new Error("없는 휴대폰 번호입니다")
 
-    const token = jwt.sign({ userId: user._id }, process.env.TOKEN_KEY as string)
+    const token = jwt.sign({ userId: user._id }, process.env.TOKEN_KEY || "test")
     return { token, user }
   }
 
@@ -63,18 +63,22 @@ export default class UserService {
       .populate("participants", userInfo)
       .sort("-createdAt")
       .skip((page2 - 1) * 5)
-      .limit(5);
+      .limit(5)
     return userActivePost
   }
 
-  getParticipantsPost = async (page2: number, userId: string, status: boolean = true): Promise<Post[]> => {
+  getParticipantsPost = async (
+    page2: number,
+    userId: string,
+    status: boolean = true
+  ): Promise<Post[]> => {
     const participantsPost = await this.postModel
       .find({ $and: [{ participants: userId }, { status: status }] })
       .populate("user", userInfo)
       .populate("participants", userInfo)
       .sort("-createdAt")
       .skip((page2 - 1) * 5)
-      .limit(5);
+      .limit(5)
     return participantsPost
   }
 }

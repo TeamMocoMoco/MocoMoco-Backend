@@ -42,7 +42,9 @@ describe("유저 생성 및 유저 로그인 기능 테스트 하기", () => {
     //assert
     expect(me.phone).toEqual(meUser.phone)
     expect(me.phone).not.toEqual(you.phone)
-    expect(async () => {})
+    expect(async () => {
+      await userService.login("000")
+    }).rejects.toThrow("없는 휴대폰 번호입니다")
   })
 })
 
