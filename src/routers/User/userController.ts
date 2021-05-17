@@ -44,12 +44,15 @@ export default class UserController implements Controller {
     const userData: User = req.body
     const phoneData: string = res.locals.phone
     try {
-      if (userData.role === '개발자') {
-        userData.userImg = 'https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916240861developer.png'
-      } else if (userData.role === '디자이너') {
-        userData.userImg = 'https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916235923designer.png'
-      } else if (userData.role === '기획자') {
-        userData.userImg = 'https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916218747director.png'
+      if (userData.role === "개발자") {
+        userData.userImg =
+          "https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916240861developer.png"
+      } else if (userData.role === "디자이너") {
+        userData.userImg =
+          "https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916235923designer.png"
+      } else if (userData.role === "기획자") {
+        userData.userImg =
+          "https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916218747director.png"
       } else {
         next(new Error("잘못된 역할입니다."))
       }
@@ -144,8 +147,8 @@ export default class UserController implements Controller {
 
   // 사용자가 만든 post
   private getUserPost: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1";
-    const page2: number = +page;
+    const page = req.query.page || "1"
+    const page2: number = +page
     const { userId } = req.params
     const { status } = req.query
 
@@ -158,7 +161,7 @@ export default class UserController implements Controller {
         const deactivePost = await this.userService.getUserPost(page2, userId, false)
         return res.send({ result: deactivePost })
       }
-      return next(new Error("잘못된 status입니다."));
+      return next(new Error("잘못된 status입니다."))
     } catch (err) {
       console.log(err)
       next(err)
@@ -167,8 +170,8 @@ export default class UserController implements Controller {
 
   // 사용자가 참여하는 post
   private getParticipantPost: RequestHandler = async (req, res, next) => {
-    const page = req.query.page || "1";
-    const page2: number = +page;
+    const page = req.query.page || "1"
+    const page2: number = +page
     const { userId } = req.params
     const { status } = req.query
 
@@ -181,7 +184,7 @@ export default class UserController implements Controller {
         const deactivePost = await this.userService.getParticipantsPost(page2, userId, false)
         return res.send({ result: deactivePost })
       }
-      return next(new Error("잘못된 status입니다."));
+      return next(new Error("잘못된 status입니다."))
     } catch (err) {
       console.log(err)
       next(err)

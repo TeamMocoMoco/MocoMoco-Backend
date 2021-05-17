@@ -1,5 +1,5 @@
-import { User, UserModel } from "../../models/User/"
-import { Post, PostModel } from "../../models/Post/"
+import { User, UserModel } from "../../models/User"
+import { Post, PostModel } from "../../models/Post"
 import { userInfo } from "../config"
 import jwt from "jsonwebtoken"
 
