@@ -76,6 +76,7 @@ export default class PostService {
           $or: [
             { title: { $regex: keyword } },
             { hashtag: { $regex: keyword } },
+            { category: { $regex: keyword } },
           ],
         },
       ])

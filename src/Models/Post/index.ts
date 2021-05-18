@@ -1,5 +1,5 @@
-import PostDto from "./dto";
 import Post from "./interface";
 import PostModel from "./model";
 
-export { PostDto, Post, PostModel };
+export * from "./dto";
+export { Post, PostModel };

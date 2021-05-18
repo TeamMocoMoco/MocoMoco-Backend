@@ -25,13 +25,13 @@ class RoomService {
     const room = await this.roomModel.findOne({
       admin: roomData.admin,
       participant: userId,
-      postId: roomData.postId,
+      post: roomData.postId,
     });
     if (room) return room._id;
 
     //새롭게 채팅방 생성하는 경우
     const newRoom = new this.roomModel({
-      postId: roomData.postId,
+      post: roomData.postId,
       admin: roomData.admin,
       participant: userId,
     });
@@ -75,7 +75,8 @@ class RoomService {
     const room = await this.roomModel
       .findById(roomId)
       .populate("participant", userInfo)
-      .populate("admin", userInfo);
+      .populate("admin", userInfo)
+      .populate("post", "title");
     return room;
   };
 
