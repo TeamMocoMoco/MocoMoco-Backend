@@ -145,12 +145,11 @@ export default class PostController implements Controller {
     const center = req.query.center as string
     if (center) {
       try {
-        const centerNum = await this.mapService.getLatLng(center)
-        const Lat = centerNum.Lat
-        const Lng = centerNum.Lng
-        const posts = await this.mapService.getMapPostsByCenter(Lat, Lng)
-        const randomziedPosts = await this.mapService.randomizeLocation(posts)
-        return res.send({ result: randomziedPosts })
+        const centerNum = await this.mapService.getLatLng(center);
+        const Lat = centerNum.Lat;
+        const Lng = centerNum.Lng;
+        const posts = await this.mapService.getMapPostsByCenter(Lat, Lng);
+        return res.send({ result: posts });
       } catch (err) {
         next(err)
       }
