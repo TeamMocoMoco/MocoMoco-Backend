@@ -46,7 +46,8 @@ class RoomService {
       })
       .populate("participant", userInfo)
       .populate("admin", userInfo)
-      .populate("lastChat");
+      .populate("lastChat")
+      .sort("-createdAt");
     return rooms;
   };
 
