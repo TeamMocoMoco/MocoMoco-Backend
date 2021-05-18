@@ -1,20 +1,20 @@
-import { IsMongoId } from "class-validator"
+import { IsMongoId } from "class-validator";
 
 export class RoomDto {
   @IsMongoId()
-  readonly admin: string
+  readonly admin: string;
 
   @IsMongoId()
-  readonly postId: string
+  readonly post: string;
 
   @IsMongoId()
-  readonly participant: string
+  readonly participant: string;
 }
 
 export class creatRoomDto {
   @IsMongoId()
-  readonly postId: string
+  readonly post: string;
 
   @IsMongoId()
-  readonly admin: string
+  readonly admin: string;
 }

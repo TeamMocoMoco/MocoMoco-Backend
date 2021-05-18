@@ -2,7 +2,7 @@ import { Document } from "mongoose";
 
 interface Room extends Document {
   admin: string;
-  postId: string;
+  post: string;
   participant: string;
   createAt: Date;
   updateAt: Date;

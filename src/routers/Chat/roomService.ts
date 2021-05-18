@@ -12,7 +12,7 @@ class RoomService {
   createRoom = async (roomData: Room, userId: string): Promise<string> => {
     //유효한 postId인지 검사하기
     const post = await this.postModel.findOne({
-      _id: roomData.postId,
+      _id: roomData.post,
       user: roomData.admin,
     });
     if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
@@ -25,13 +25,13 @@ class RoomService {
     const room = await this.roomModel.findOne({
       admin: roomData.admin,
       participant: userId,
-      post: roomData.postId,
+      post: roomData.post,
     });
     if (room) return room._id;
 
     //새롭게 채팅방 생성하는 경우
     const newRoom = new this.roomModel({
-      post: roomData.postId,
+      post: roomData.post,
       admin: roomData.admin,
       participant: userId,
     });
@@ -82,7 +82,7 @@ class RoomService {
 
   getParticipants = async (roomInfo: Room): Promise<Post | null> => {
     const post = await this.postModel
-      .findById(roomInfo.postId)
+      .findById(roomInfo.post)
       .populate("participants", userInfo)
       .select("participants");
     return post;
