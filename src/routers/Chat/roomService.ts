@@ -1,8 +1,11 @@
 import { Room, RoomModel } from "../../models/Room";
 import { Post, PostModel } from "../../models/Post";
-import { Chat, ChatModel } from "../../models/Chat";
+import { ChatModel } from "../../models/Chat";
 import { userInfo } from "../../routers/config";
 
+interface filterRoom extends Room {
+  lastChat?: string[];
+}
 class RoomService {
   private roomModel = RoomModel;
   private postModel = PostModel;
@@ -39,8 +42,8 @@ class RoomService {
     return newRoom._id;
   };
 
-  getRooms = async (userId: string): Promise<Room[]> => {
-    const rooms = await this.roomModel
+  getRooms = async (userId: string): Promise<(filterRoom | undefined)[]> => {
+    const rooms: filterRoom[] = await this.roomModel
       .find({
         $or: [{ admin: userId }, { participant: userId }],
       })
@@ -48,28 +51,15 @@ class RoomService {
       .populate("admin", userInfo)
       .populate("lastChat")
       .sort("-createdAt");
-    return rooms;
-  };
 
-  getRoomsLastChat = async (rooms: Room[]): Promise<(Chat | Object)[]> => {
-    let lastChat: (Chat | Object)[] = [];
-    const chats = await this.chatModel.find({}).sort("-createdAt");
+    const filterRooms = rooms.filter(
+      (room) =>
+        room.lastChat &&
+        room.lastChat?.length > 0 &&
+        !room.removeList.includes(userId)
+    );
 
-    for (let i = 0; i < rooms.length; i++) {
-      let flag = 0;
-      for (let j = 0; j < chats.length; j++) {
-        typeof rooms;
-        if (rooms[i]._id == chats[j].roomId) {
-          lastChat.push(chats[j]);
-          flag = 1;
-          break;
-        }
-      }
-      if (flag === 0) {
-        lastChat.push({});
-      }
-    }
-    return lastChat;
+    return filterRooms;
   };
 
   getRoomById = async (roomId: string): Promise<Room | null> => {
@@ -81,12 +71,25 @@ class RoomService {
     return room;
   };
 
+  checkRemove = (room: Room): Boolean => {
+    if (room.removeList.length > 0) return true;
+    return false;
+  };
+
   getParticipants = async (roomInfo: Room): Promise<Post | null> => {
     const post = await this.postModel
       .findById(roomInfo.post)
       .populate("participants", userInfo)
       .select("participants");
     return post;
+  };
+
+  deleteRoomById = async (roomId: string, userId: string): Promise<Room> => {
+    const room = await this.roomModel.findByIdAndUpdate(roomId, {
+      $push: { removeList: userId },
+    });
+    if (!room) throw new Error("해당 방이 존재하지 않습니다.");
+    return room;
   };
 }
 

@@ -29,6 +29,7 @@ export default class ChatController implements Controller {
       validation(creatChatDto),
       this.createChat
     )
+    this.router.delete(`${this.path}/:roomId`, JwtValidation, this.deleteRoom)
   }
 
   //방 만들기
@@ -52,10 +53,10 @@ export default class ChatController implements Controller {
     try {
       const roomInfo = await this.roomService.getRoomById(roomId)
       if (!roomInfo) throw new Error("Room이 없습니다.")
-
+      const removeCheck = this.roomService.checkRemove(roomInfo)
       const chat = await this.chatService.getChatById(roomId)
       const participants = await this.roomService.getParticipants(roomInfo)
-      return res.send({ result: { roomInfo, chat, participants } })
+      return res.send({ result: { roomInfo, removeCheck, chat, participants } })
     } catch (err) {
       next(err)
     }
@@ -85,8 +86,19 @@ export default class ChatController implements Controller {
     const userId = res.locals.user
     try {
       const rooms = await this.roomService.getRooms(userId)
-      // const chats = await this.roomService.getRoomsLastChat(rooms);
       return res.send({ result: { rooms: rooms } })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  //채팅방 삭제
+  private deleteRoom: RequestHandler = async (req, res, next) => {
+    const { roomId } = req.params
+    const userId = res.locals.user
+    try {
+      const room = await this.roomService.deleteRoomById(roomId, userId)
+      if (room) return res.send({ result: "success" })
     } catch (err) {
       next(err)
     }
