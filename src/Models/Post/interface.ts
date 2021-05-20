@@ -2,8 +2,6 @@ import { Document } from "mongoose";
 
 interface Post extends Document {
   user: string;
-  position: string;
-  language?: string;
   title: string;
   content: string;
   personnel: number;

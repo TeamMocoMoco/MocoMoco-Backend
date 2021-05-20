@@ -4,8 +4,6 @@ import Post from "./interface";
 const PostSchema = new Schema(
   {
     user: { type: Types.ObjectId, ref: "user", required: true },
-    position: { type: String },
-    language: { type: String },
     title: { type: String, required: true },
     content: { type: String, required: true },
     personnel: { type: Number, required: true },
