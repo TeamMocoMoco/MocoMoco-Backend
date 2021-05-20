@@ -10,7 +10,7 @@ class RoomService {
   private roomModel = RoomModel
   private postModel = PostModel
   private chatModel = ChatModel
-  constructor() {}
+  constructor() { }
 
   createRoom = async (roomData: Room, userId: string): Promise<string> => {
     //유효한 postId인지 검사하기
@@ -83,7 +83,7 @@ class RoomService {
 
   deleteRoomById = async (roomId: string, userId: string): Promise<Room> => {
     const room = await this.roomModel.findByIdAndUpdate(roomId, {
-      $push: { removeCheck: userId },
+      $push: { removeList: userId },
     })
     if (!room) throw new Error("해당 방이 존재하지 않습니다.")
     return room
