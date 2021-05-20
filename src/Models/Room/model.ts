@@ -6,7 +6,7 @@ const RoomSchema = new Schema(
     admin: { type: Types.ObjectId, ref: "user", required: true },
     post: { type: Types.ObjectId, ref: "post", required: true },
     participant: { type: Types.ObjectId, ref: "user", required: true },
-    removeCheck: { type: [{ type: Types.ObjectId, ref: "user" }] },
+    removeList: { type: [{ type: Types.ObjectId, ref: "user" }] },
   },
   { timestamps: true }
 )
