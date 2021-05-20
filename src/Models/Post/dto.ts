@@ -10,9 +10,6 @@ import {
 
 export class PostDto {
   @IsString()
-  readonly position: string;
-
-  @IsString()
   readonly title: string;
 
   @IsString()
