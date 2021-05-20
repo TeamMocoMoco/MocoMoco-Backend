@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
-import { dropAllCollections, removeAllCollections } from "../test-setup"
-import UserService from "../../routers/User/userService"
-import { User } from "../../models/User"
+import { dropAllCollections, removeAllCollections } from "../../test-setup"
+import UserService from "../../../routers/User/userService"
+import { User } from "../../../models/User"
 import "dotenv/config"
 const databaseName = "test"
 

@@ -1,8 +1,8 @@
 import mongoose from "mongoose"
-import { dropAllCollections, removeAllCollections } from "../test-setup"
-import PostService from "../../routers/Post/postService"
-import { UserModel } from "../../models/User"
-import { PostModel } from "../../models/Post"
+import { dropAllCollections, removeAllCollections } from "../../test-setup"
+import PostService from "../../../routers/Post/postService"
+import { UserModel } from "../../../models/User"
+import { PostModel } from "../../../models/Post"
 const databaseName = "test"
 
 beforeAll(async () => {
