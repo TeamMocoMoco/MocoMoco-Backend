@@ -52,17 +52,13 @@ class RoomService {
       .populate("lastChat")
       .sort("-createdAt");
 
-    const filterRooms = rooms.map((room) => {
-      if (
+    const filterRooms = rooms.filter(
+      (room) =>
         room.lastChat &&
         room.lastChat?.length > 0 &&
         !room.removeList.includes(userId)
-      ) {
-        return room;
-      } else {
-        return;
-      }
-    });
+    );
+
     return filterRooms;
   };
 
