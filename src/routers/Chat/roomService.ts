@@ -52,7 +52,7 @@ class RoomService {
       .sort("-createdAt")
 
     const filterRooms = rooms.map((room) => {
-      if (room.lastChat || !room.removeCheck.includes(userId)) {
+      if (room.lastChat || !room.removeList.includes(userId)) {
         return room
       }
     })
@@ -69,7 +69,7 @@ class RoomService {
   }
 
   checkRemove = (room: Room): Boolean => {
-    if (room.removeCheck.length > 0) return true
+    if (room.removeList.length > 0) return true
     return false
   }
 

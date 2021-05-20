@@ -86,7 +86,6 @@ export default class ChatController implements Controller {
     const userId = res.locals.user
     try {
       const rooms = await this.roomService.getRooms(userId)
-      // const chats = await this.roomService.getRoomsLastChat(rooms);
       return res.send({ result: { rooms: rooms } })
     } catch (err) {
       next(err)

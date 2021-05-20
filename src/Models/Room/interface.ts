@@ -4,7 +4,7 @@ interface Room extends Document {
   admin: string
   post: string
   participant: string
-  removeCheck: string[]
+  removeList: string[]
   createAt: Date
   updateAt: Date
 }
