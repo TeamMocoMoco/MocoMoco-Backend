@@ -5,16 +5,22 @@ import { User } from "../../../models/User";
 import "dotenv/config";
 const databaseName = "test";
 
-const me: any = {
+const user1: any = {
   name: "test1",
   phone: "01012345678",
   role: "개발자",
 };
 
-const you: any = {
+const user2: any = {
   name: "test2",
   phone: "01056781234",
   role: "개발자",
+};
+
+const user3: any = {
+  name: "test3",
+  phone: "01011112222",
+  role: "디자이너",
 };
 
 beforeAll(async () => {
@@ -27,21 +33,22 @@ describe("유저 생성 및 유저 로그인 기능 테스트 하기", () => {
 
   test("유저 생성", async () => {
     //act
-    const newUser = await userService.createUser(me, me.phone);
-    const newUser2 = await userService.createUser(you, you.phone);
+    const newUser = await userService.createUser(user1, user1.phone);
+    const newUser2 = await userService.createUser(user2, user2.phone);
+    const newUser3 = await userService.createUser(user3, user3.phone);
     // assert
-    expect(newUser.phone).toEqual(me.phone);
+    expect(newUser.phone).toEqual(user1.phone);
   });
 
   test("로그인", async () => {
     //act
-    const result = await userService.login(me.phone);
+    const result = await userService.login(user1.phone);
     const meToken: string = result.token;
     const meUser: User = result.user;
 
     //assert
-    expect(me.phone).toEqual(meUser.phone);
-    expect(me.phone).not.toEqual(you.phone);
+    expect(user1.phone).toEqual(meUser.phone);
+    expect(user1.phone).not.toEqual(user2.phone);
     expect(async () => {
       await userService.login("000");
     }).rejects.toThrow("없는 휴대폰 번호입니다");
