@@ -6,20 +6,25 @@ import { rand } from "../../middlewares/utile";
 export default class PostService {
   private postModel = PostModel;
   private userModel = UserModel;
-  constructor() { }
+  constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
     if (new Date(postData.startDate) <= new Date())
       throw new Error("지난 날짜를 시작일로 설정할 수 없습니다.");
-    if (postData.location?.length === 1) throw new Error("위치 정보가 잘못되었습니다.")
+    if (postData.location?.length === 1)
+      throw new Error("위치 정보가 잘못되었습니다.");
     if (postData.location?.length === 2) {
-      postData.offLocation = []
+      postData.offLocation = [];
       const randLat = rand(-400, 400);
       const offsetLat = randLat * 0.000001;
-      postData.offLocation[0] = Number((postData.location[0] + offsetLat).toFixed(6));
+      postData.offLocation[0] = Number(
+        (postData.location[0] + offsetLat).toFixed(6)
+      );
       const randLng = rand(-400, 400);
       const offsetLng = randLng * 0.000001;
-      postData.offLocation[1] = Number((postData.location[1] + offsetLng).toFixed(6));
+      postData.offLocation[1] = Number(
+        (postData.location[1] + offsetLng).toFixed(6)
+      );
     }
     const newPost = new this.postModel({ ...postData, user: userId });
     await newPost.save();
@@ -39,7 +44,7 @@ export default class PostService {
       { ...postUpdateData },
       { new: true }
     );
-    if (!post) new Error("작성하신 글이 존재하지 않습니다.");
+    if (!post) throw new Error("작성하신 글이 존재하지 않습니다.");
     return post;
   };
 
