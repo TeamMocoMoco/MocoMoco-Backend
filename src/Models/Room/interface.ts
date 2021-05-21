@@ -1,11 +1,12 @@
-import { Document } from "mongoose";
+import { Document } from "mongoose"
 
 interface Room extends Document {
-  admin: string;
-  post: string;
-  participant: string;
-  createAt: Date;
-  updateAt: Date;
+  admin: string
+  post: string
+  participant: string
+  removeList: string[]
+  createAt: Date
+  updateAt: Date
 }
 
-export default Room;
+export default Room
