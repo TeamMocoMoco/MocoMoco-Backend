@@ -24,7 +24,7 @@ describe("포스트 서비스 테스트하기", () => {
       title: "test",
       content: "test",
       personnel: 5,
-      meeting: "online",
+      meeting: "offline",
       category: "모각코",
       status: true,
       location: [],
@@ -34,7 +34,7 @@ describe("포스트 서비스 테스트하기", () => {
     };
 
     const post2: any = {
-      title: "test",
+      title: "test2",
       content: "test",
       personnel: 5,
       meeting: "offline",
@@ -84,15 +84,16 @@ describe("포스트 서비스 테스트하기", () => {
       title: "update test",
       content: "update test",
       personnel: 4,
-      meeting: "offline",
-      category: "프로젝트",
+      meeting: "online",
       status: false,
     };
     // act
     const postId = newPost._id.toHexString();
     newPost = await postService.updatePost(postUpdateData, userId, postId);
     // assert
+    //제대로 업데이트가 된 경우
     expect(newPost!.title).toStrictEqual("update test");
+    //postId가 잘못된 경우(업데이트 실패시)
     await expect(async () => {
       await postService.updatePost(
         postUpdateData,
@@ -102,6 +103,27 @@ describe("포스트 서비스 테스트하기", () => {
     }).rejects.toThrow("작성하신 글이 존재하지 않습니다.");
   });
 
+  test("포스트 가져오기", async () => {
+    //arrange
+    const post3: any = {
+      title: "test3",
+      content: "test",
+      personnel: 5,
+      meeting: "online",
+      category: "모각코",
+      status: true,
+      location: [],
+      hashtag: [],
+      startDate: "2022-05-24T15:59:00Z",
+      dueDate: "2022-06-27T14:00:00Z",
+    };
+    await postService.createPost(post3, userId);
+    //act
+    const allPosts = await postService.getPosts(1, "online", "모각코", "test");
+    console.log(allPosts);
+    //assert
+    expect(allPosts.length).toEqual(2);
+  });
   // test("스터디에 추가하기", async () => {
   //   // arrange
   //   const user2 = await UserModel.findOne({ name: "test1" });
