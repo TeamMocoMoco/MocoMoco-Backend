@@ -1,5 +1,5 @@
-import ChatDto from "./dto";
-import Chat from "./interface";
-import ChatModel from "./model";
+import Chat from "./interface"
+import ChatModel from "./model"
 
-export { Chat, ChatModel, ChatDto };
+export * from "./dto"
+export { Chat, ChatModel }

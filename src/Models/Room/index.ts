@@ -1,5 +1,5 @@
-import RoomDto from "./dto";
-import Room from "./interface";
-import RoomModel from "./model";
+import Room from "./interface"
+import RoomModel from "./model"
 
-export { RoomDto, Room, RoomModel };
+export * from "./dto"
+export { Room, RoomModel }

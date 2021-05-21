@@ -2,8 +2,6 @@ import { Document } from "mongoose";
 
 interface Post extends Document {
   user: string;
-  position: string;
-  language?: string;
   title: string;
   content: string;
   personnel: number;
@@ -11,6 +9,7 @@ interface Post extends Document {
   category: string;
   hashtag: string[];
   location?: number[];
+  offLocation?: number[];
   address?: string;
   address_name?: string;
   startDate: Date;

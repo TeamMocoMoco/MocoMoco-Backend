@@ -13,3 +13,9 @@ describe("랜덤 미들웨어 테스트 해보기", () => {
     expect(n).toBeLessThanOrEqual(100)
   })
 })
+
+describe("빈 배열일 때 boolan 값은?", () => {
+  test("빈 배열의 boolan", () => {
+    expect([]).toBeFalsy
+  })
+})

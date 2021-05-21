@@ -30,20 +30,20 @@ const getDays = (startDate: Date) => {
   const difference = startDate.getTime() - today.getTime()
   let day = Math.floor(difference / (1000 * 60 * 60 * 24))
   const Remainder = difference % (1000 * 3600 * 24)
-  day = Remainder === 0 ? day : (day += 1)
+  const days = Remainder === 0 ? day : (day += 1)
 
-  if (day >= 7) {
+  if (days >= 7) {
     return `${Math.floor(day / 7)}주일 뒤 시작`
-  } else if (day > 1) {
+  } else if (days > 1) {
     return `${day}일 뒤 시작`
-  } else if (day == 1) {
+  } else if (days == 1) {
     return `내일부터 시작`
-  } else if (day == 0) {
+  } else if (days == 0) {
     return `오늘 마감`
-  } else if (day > -7) {
+  } else if (days > -7) {
     return `${-day}일 지남`
-  } else if (day <= -7) {
-    return `${Math.floor(-day / 7)}주일 지남`
+  } else if (days <= -7) {
+    return `${Math.floor(-days / 7)}주일 지남`
   }
 }
 

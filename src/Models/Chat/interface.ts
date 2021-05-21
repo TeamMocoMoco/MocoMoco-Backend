@@ -1,11 +1,11 @@
-import { Document } from "mongoose";
+import { Document } from "mongoose"
 
 interface Chat extends Document {
-  user: string;
-  roomId: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
+  user: string
+  roomId: string
+  content: string
+  createdAt: Date
+  updatedAt: Date
 }
 
-export default Chat;
+export default Chat
