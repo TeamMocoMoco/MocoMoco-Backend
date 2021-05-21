@@ -30,7 +30,9 @@ class RoomService {
       participant: userId,
       post: roomData.post,
     });
-    if (room) return room._id;
+    if (room && room.removeList.length > 0)
+      throw new Error("이미 삭제한 채팅방입니다.");
+    else if (room) return room._id;
 
     //새롭게 채팅방 생성하는 경우
     const newRoom = new this.roomModel({
