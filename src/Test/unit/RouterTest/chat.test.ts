@@ -8,13 +8,15 @@ import RoomService from "../../../routers/Chat/roomService";
 import PostService from "../../../routers/Post/postService";
 
 import "dotenv/config";
-import { CodeStarconnections } from "aws-sdk";
-
 const databaseName = "test";
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${databaseName}`;
-  await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  });
 });
 
 describe("채팅관련 테스트", () => {
