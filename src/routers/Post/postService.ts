@@ -1,6 +1,7 @@
 import { Post, PostModel } from "../../models/Post";
 import { User, UserModel } from "../../models/User";
-import { Meeting, userInfo } from "./config";
+import { Meeting, userInfo } from "../config";
+import { rand } from "../../middlewares/utile";
 
 export default class PostService {
   private postModel = PostModel;
@@ -8,8 +9,24 @@ export default class PostService {
   constructor() {}
 
   createPost = async (postData: Post, userId: string): Promise<Post> => {
+    if (new Date(postData.startDate) <= new Date())
+      throw new Error("지난 날짜를 시작일로 설정할 수 없습니다.");
+    if (postData.location?.length === 1)
+      throw new Error("위치 정보가 잘못되었습니다.");
+    if (postData.location?.length === 2) {
+      postData.offLocation = [];
+      const randLat = rand(-400, 400);
+      const offsetLat = randLat * 0.000001;
+      postData.offLocation[0] = Number(
+        (postData.location[0] + offsetLat).toFixed(6)
+      );
+      const randLng = rand(-400, 400);
+      const offsetLng = randLng * 0.000001;
+      postData.offLocation[1] = Number(
+        (postData.location[1] + offsetLng).toFixed(6)
+      );
+    }
     const newPost = new this.postModel({ ...postData, user: userId });
-
     await newPost.save();
     return newPost;
   };
@@ -27,7 +44,7 @@ export default class PostService {
       { ...postUpdateData },
       { new: true }
     );
-    if (!post) new Error("작성하신 글이 존재하지 않습니다.");
+    if (!post) throw new Error("작성하신 글이 존재하지 않습니다.");
     return post;
   };
 
@@ -41,7 +58,7 @@ export default class PostService {
 
   getPostById = async (postId: string): Promise<Post | null> => {
     const post = await this.postModel
-      .findById(postId)
+      .findById({ _id: postId }, { location: 0 })
       .populate("user", userInfo)
       .populate("participants", userInfo);
     return post;
@@ -55,7 +72,7 @@ export default class PostService {
     keyword: string
   ): Promise<Post[]> => {
     const posts = await this.postModel
-      .find()
+      .find({}, { location: 0 })
       .and([
         { status: true },
         { meeting },
@@ -64,6 +81,7 @@ export default class PostService {
           $or: [
             { title: { $regex: keyword } },
             { hashtag: { $regex: keyword } },
+            { category: { $regex: keyword } },
           ],
         },
       ])
@@ -120,5 +138,17 @@ export default class PostService {
       { _id: post._id },
       { $pull: { participants: participant._id } }
     );
+  };
+
+  updatePostStatus = async (postId: string, userId: string): Promise<void> => {
+    const post = await this.postModel.findOneAndUpdate(
+      {
+        _id: postId,
+        user: userId,
+      },
+      { status: false },
+      { new: true }
+    );
+    if (!post) throw new Error("잘못된 정보가 기재되었습니다.");
   };
 }

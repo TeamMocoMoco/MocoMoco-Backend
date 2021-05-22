@@ -1,11 +1,12 @@
 import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import Controller from "./routers/interfaces/controller";
-import { Job } from "node-schedule";
 import morgan from "morgan";
 import "dotenv/config";
+import { Job } from "node-schedule";
 import { scheduleJob } from "./middlewares/schedule";
+import helmet from "helmet";
+import hpp from "hpp";
 
 class App {
   app: express.Application;
@@ -34,10 +35,16 @@ class App {
       .catch((err) => console.log(err));
   }
   private setMiddleWare() {
-    this.app.use(cors());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(express.json());
-    this.app.use(morgan("dev"));
+
+    if (process.env.NODE_ENV === "production") {
+      this.app.use(morgan("combined"));
+      this.app.use(helmet({ contentSecurityPolicy: false }));
+      this.app.use(hpp());
+    } else {
+      this.app.use(morgan("dev"));
+    }
   }
   private setRouter(controllers: Controller[]) {
     this.app.get("/", (req, res) => {
@@ -55,7 +62,7 @@ class App {
   private setError() {
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
-        console.log(err);
+        console.log(err)
         res.status(500).send({ err: err.message });
       }
     );

@@ -5,11 +5,9 @@ import http from "http";
 enum Events {
   CONNECTION = "connection",
   DISCONNECT = "disconnect",
-  INIT = "init",
   MESSAGE = "message",
   CONNECT_ROOM = "connectRoom",
   DISCONNECT_ROOM = "disconnectRoom",
-  DISCONNECT_USER = "disconnectUser",
 }
 
 export default class ChatServer {

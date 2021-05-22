@@ -5,12 +5,10 @@ import {
   IsDateString,
   ArrayMaxSize,
   ArrayMinSize,
+  IsMongoId,
 } from "class-validator";
 
-class PostDto {
-  @IsString()
-  readonly position: string;
-
+export class PostDto {
   @IsString()
   readonly title: string;
 
@@ -26,13 +24,18 @@ class PostDto {
   @IsString()
   readonly category: string;
 
-  @ArrayMinSize(1)
   @IsString({ each: true })
   readonly hashtag: string[];
 
   @IsNumber({}, { each: true })
   @ArrayMaxSize(2)
   readonly location: number[];
+
+  @IsString()
+  readonly address: string;
+
+  @IsString()
+  readonly address_name: string;
 
   @IsDateString()
   readonly startDate: Date;
@@ -41,4 +44,7 @@ class PostDto {
   readonly dueDate: Date;
 }
 
-export default PostDto;
+export class ParticipantDto {
+  @IsMongoId()
+  readonly participantId: string;
+}
