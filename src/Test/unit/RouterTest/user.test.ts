@@ -3,7 +3,6 @@ import { removeSelectCollections } from "../../test-setup";
 import UserService from "../../../routers/User/userService";
 import PostService from "../../../routers/Post/postService";
 import { User, UserModel } from "../../../models/User";
-import { Post, PostModel } from "../../../models/Post";
 require('dotenv').config();
 
 const databaseName = "test";
@@ -33,6 +32,7 @@ beforeAll(async () => {
   await mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   });
 });
 
