@@ -113,7 +113,7 @@ export default class UserController implements Controller {
           phone: "01000000000",
           role: "알수없는역할",
           introduce: "",
-          userImg: "https://mocomoco.s3.amazonaws.com/original/1620694702756profile_img.png",
+          userImg: "https://mocomoco.s3.ap-northeast-2.amazonaws.com/original/1620916240861developer.png",
         },
         userId
       )
