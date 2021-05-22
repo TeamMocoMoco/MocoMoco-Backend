@@ -21,8 +21,9 @@ class App {
     this.schedule = scheduleJob;
   }
   private setDB() {
+    const databaseName = process.env.NODE_ENV === "production" ? "admin" : "test";
     mongoose
-      .connect("mongodb://localhost:27017/admin", {
+      .connect(`mongodb://localhost:27017/${databaseName}`, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
