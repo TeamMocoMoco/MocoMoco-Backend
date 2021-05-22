@@ -4,7 +4,8 @@ import UserService from "../../../routers/User/userService";
 import PostService from "../../../routers/Post/postService";
 import { User, UserModel } from "../../../models/User";
 import { Post, PostModel } from "../../../models/Post";
-import "dotenv/config";
+require('dotenv').config();
+
 const databaseName = "test";
 
 const user1: any = {
