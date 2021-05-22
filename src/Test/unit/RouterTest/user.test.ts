@@ -182,6 +182,7 @@ describe("유저 서비스 테스트", () => {
 });
 
 afterAll(async () => {
-  // await removeSelectCollections("users");
+  await removeSelectCollections("users");
+  await removeSelectCollections("posts");
   await mongoose.connection.close();
 });
