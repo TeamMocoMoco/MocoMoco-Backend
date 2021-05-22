@@ -25,7 +25,10 @@ const user3: any = {
 
 beforeAll(async () => {
   const url = `mongodb://127.0.0.1/${databaseName}`;
-  await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 });
 
 describe("유저 생성 및 유저 로그인 기능 테스트 하기", () => {
@@ -56,6 +59,6 @@ describe("유저 생성 및 유저 로그인 기능 테스트 하기", () => {
 });
 
 afterAll(async () => {
-  await removeSelectCollections("users");
+  // await removeSelectCollections("users");
   await mongoose.connection.close();
 });
