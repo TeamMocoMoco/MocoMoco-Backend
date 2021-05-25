@@ -21,8 +21,9 @@ class App {
     this.schedule = scheduleJob;
   }
   private setDB() {
+    const databaseName = process.env.NODE_ENV === "production" ? "admin" : "test";
     mongoose
-      .connect("mongodb://localhost:27017/admin", {
+      .connect(`mongodb://localhost:27017/${databaseName}`, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
@@ -60,12 +61,10 @@ class App {
     });
   }
   private setError() {
-    this.app.use(
-      (err: Error, req: Request, res: Response, next: NextFunction) => {
-        console.log(err)
-        res.status(500).send({ err: err.message });
-      }
-    );
+    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      console.log(err);
+      res.status(500).send({ err: err.message });
+    });
   }
 }
 

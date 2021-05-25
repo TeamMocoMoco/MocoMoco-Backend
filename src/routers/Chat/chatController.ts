@@ -21,12 +21,7 @@ export default class ChatController implements Controller {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/myroom`, JwtValidation, this.getRooms);
-    this.router.post(
-      `${this.path}`,
-      JwtValidation,
-      validation(creatRoomDto),
-      this.createRoom
-    );
+    this.router.post(`${this.path}`, JwtValidation, validation(creatRoomDto), this.createRoom);
     this.router.get(`${this.path}/:roomId`, JwtValidation, this.getRoomById);
     this.router.post(
       `${this.path}/:roomId/chat`,
@@ -53,8 +48,7 @@ export default class ChatController implements Controller {
   //방 안 채팅 불러오기
   private getRoomById: RequestHandler = async (req, res, next) => {
     const { roomId } = req.params;
-    if (!Types.ObjectId.isValid(roomId))
-      next(new Error("오브젝트 아이디가 아닙니다."));
+    if (!Types.ObjectId.isValid(roomId)) next(new Error("오브젝트 아이디가 아닙니다."));
 
     try {
       const roomInfo = await this.roomService.getRoomById(roomId);
@@ -75,8 +69,7 @@ export default class ChatController implements Controller {
     const userId = res.locals.user;
     const chatData: Chat = req.body;
     const { roomId } = req.params;
-    if (!Types.ObjectId.isValid(roomId))
-      next(new Error("오브젝트 아이디가 아닙니다"));
+    if (!Types.ObjectId.isValid(roomId)) next(new Error("오브젝트 아이디가 아닙니다"));
 
     try {
       const chat = await this.chatService.creatChat(chatData, userId, roomId);

@@ -1,4 +1,4 @@
-import { rand } from "../../middlewares/utile"
+import { rand } from "../../../middlewares/utile"
 
 describe("기초적인 테스트 입니다.", () => {
   test("1+1은 2입니다.", () => {
