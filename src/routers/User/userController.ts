@@ -87,7 +87,7 @@ export default class UserController implements Controller {
     const userId = res.locals.user
     const userUpdateData: User = req.body
     const img = req.file && (req.file as Express.MulterS3.File)
-    const imgUrl = img && img.location
+    const imgUrl = img && img.transforms[0].location
 
     if (!Types.ObjectId.isValid(userId)) next(new Error("오브젝트 아이디가 아닙니다."))
     try {

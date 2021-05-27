@@ -31,6 +31,7 @@
     "@types/multer-s3": "^2.7.9",
     "@types/node": "^14.14.41",
     "@types/node-schedule": "^1.3.1",
+    "@types/sharp": "^0.28.2",
     "@types/socket.io": "^2.1.13",
     "@types/supertest": "^2.0.11",
     "axios": "^0.21.1",
@@ -43,7 +44,7 @@
   "dependencies": {
     "@types/aws-sdk": "^2.7.0",
     "@types/multer": "^1.4.5",
-    "aws-sdk": "^2.897.0",
+    "aws-sdk": "^2.916.0",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
@@ -59,9 +60,12 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
+    "multer-s3-transform": "^2.10.3",
+    "multer-sharp-s3": "^0.2.1",
     "node-schedule": "^2.0.0",
     "node-sens": "^1.3.0",
     "reflect-metadata": "^0.1.13",
+    "sharp": "^0.28.3",
     "socket.io": "^4.0.1",
     "winston": "^3.3.3"
   }
