@@ -1,7 +1,7 @@
 import express, { RequestHandler } from "express";
 import Controller from "../interfaces/controller";
 import { Post, PostDto, ParticipantDto } from "../../models/Post";
-import { validation, JwtValidation } from "../../middlewares/validation";
+import { validation, JwtValidation,scriptFilter } from "../../middlewares/validation";
 import PostService from "./postService";
 import MapService from "./mapService";
 import { Types } from "mongoose";
@@ -60,7 +60,7 @@ export default class PostController implements Controller {
   //게시글 작성
   private createPost: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
-    const postData: Post = req.body;
+    const postData: Post = scriptFilter(req.body);
 
     try {
       const newPost = await this.postService.createPost(postData, userId);
@@ -88,7 +88,7 @@ export default class PostController implements Controller {
   //게시글 수정
   private updatePost: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user;
-    const postUpdateData: Post = req.body;
+    const postUpdateData: Post = scriptFilter(req.body);
     const { postId } = req.params;
     if (!Types.ObjectId.isValid(postId))
       return next(new Error("오브젝트 아이디가 아닙니다"));
