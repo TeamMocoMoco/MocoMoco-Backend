@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
-import { dropAllCollections, removeAllCollections } from "../test-setup"
-import SMSService from "../../routers/SMS/SMSService"
-import SMSController from "../../routers/SMS/SMSController"
-import UserService from "../../routers/User/userService"
-import { UserModel } from "../../models/User"
+import { dropAllCollections, removeAllCollections } from "../../test-setup"
+import SMSService from "../../../routers/SMS/SMSService"
+import SMSController from "../../../routers/SMS/SMSController"
+import UserService from "../../../routers/User/userService"
+import { UserModel } from "../../../models/User"
 const databaseName = "test"
 
 beforeAll(async () => {
