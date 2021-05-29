@@ -70,6 +70,62 @@ https://www.youtube.com/watch?v=Q2pUbG6HHnw
 배포 : **AWS , S3(이미지)**
 <img width="1599" alt="스크린샷 2021-05-28 오전 12 29 12" src="https://user-images.githubusercontent.com/61581033/119854155-cdbb7900-bf4b-11eb-82ad-aca53b97f83b.png">
 
+## ✨프로젝트 중 고민한 부분✨
+### 1. 오프라인 상태에서 채팅보내기
+
+소켓이 연결된 상태에서 메세지를 저장하게 된다면 오프라인 상태에서는 소켓이 연결되지 않으므로 메세지를 받기 힘들다.
+
+따라서 API를 통해 채팅 기록을 데이터베이스에 저장하게 된다면 오프라인 상태에서도 message를 나중에 열람이 가능하다.
+
+```tsx
+private createChat: RequestHandler = async (req, res, next) => {
+    const userId = res.locals.user;
+    const chatData: Chat = req.body;
+    const { roomId } = req.params;
+    if (!Types.ObjectId.isValid(roomId)) next(new Error("오브젝트 아이디가 아닙니다"));
+
+    try {
+      const chat = await this.chatService.creatChat(chatData, userId, roomId);
+      // 여기를 통해 소켓에서 메세지를 보낸다.
+      req.app.get("io").of("/chat").to(roomId).emit("chat", chat);
+      return res.send({ result: "success" });
+    } catch (err) {
+      next(err);
+    }
+  };
+```
+
+### 2. ISO 타임 문제 (스케줄링 관련)
+모임의 시작 시간과 종료 시간을 받고, 모임 시작일이 지난 게시물의 경우에는 스케줄링을 통하여 상태를 변경시켜야 했다.
+
+### 3. 타입 스크립트에서의 multer-s3-transform 
+multer-s3-transform 을 쓰려고 했지만 npm에 node-js는 지원을 하지만 typescript는 지원을 하지 않습니다.
+
+일단 코드에 적용을 시켜보니까 해당 모듈의 타입 지정이 되어있지 않은 오류가 났기 때문에, 잘 작동하는 다른 모듈을 대조해서 타입을 지정하는 파일을 작성했다. 
+
+해당 파일을 @Types폴더에 넣은 결과 정상적으로 작동이 되었다.
+
+```jsx
+interface Options {
+    s3: AWS.S3;
+    bucket: ((req: Express.Request, file: Express.Multer.File, callback: (error: any, bucket?: string) => void) => void) | string;
+    key?(req: Express.Request, file: Express.Multer.File, callback: (error: any, key?: string) => void): void;
+    acl?: ((req: Express.Request, file: Express.Multer.File, callback: (error: any, acl?: string) => void) => void) | string;
+    contentType?(req: Express.Request, file: Express.Multer.File, callback: (error: any, mime?: string, stream?: NodeJS.ReadableStream) => void): void;
+    shouldTransform?: ((req: Express.Request, file: Express.Multer.File, callback: (error: any, shouldTransform?: boolean) => void) => void) | boolean;
+    transforms: [
+        {
+            id: string,
+            key: (req: Express.Request, file: Express.Multer.File, callback: (error: any, key?: string) => void) => void,
+            transform: (req: Express.Request, file: Express.Multer.File, callback: (error: any, key?: function) => void) => void
+        }
+    ]
+    contentDisposition?: ((req: Express.Request, file: Express.Multer.File, callback: (error: any, contentDisposition?: string) => void) => void) | string;
+    metadata?(req: Express.Request, file: Express.Multer.File, callback: (error: any, metadata?: any) => void): void;
+    cacheControl?: ((req: Express.Request, file: Express.Multer.File, callback: (error: any, cacheControl?: string) => void) => void) | string;
+    serverSideEncryption?: ((req: Express.Request, file: Express.Multer.File, callback: (error: any, serverSideEncryption?: string) => void) => void) | string;
+}
+```
 
 
 
