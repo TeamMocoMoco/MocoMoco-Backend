@@ -95,11 +95,19 @@ private createChat: RequestHandler = async (req, res, next) => {
   };
 ```
 
-### 2. ISO 타임 문제 (스케줄링 관련)
+### 2. UTC 타임 문제 (스케줄링 관련)
 모임의 시작 시간과 종료 시간을 받고, 모임 시작일이 지난 게시물의 경우에는 스케줄링을 통하여 상태를 변경시켜야 했다.
 
+Node.js에서는 기본적으로 **UTC-0**을 기준으로 작동을 하였기에, 우리가 원하는 스케줄링을 위해서는 이에 관련한 고려가 필요했다.
+
+클라이언트와 백엔드 모두 UTC-0을 기준으로 로직을 전체적으로 가다듬고, 14:59에 스케줄링을 진행하는 것으로 문제를 해결했다.
+
+![UTC-0](https://user-images.githubusercontent.com/61581033/120128458-fa49ec00-c1fc-11eb-8c72-1ebe7015a797.jpeg)
+
+
+
 ### 3. 타입 스크립트에서의 multer-s3-transform 
-multer-s3-transform 을 쓰려고 했지만 npm에 node-js는 지원을 하지만 typescript는 지원을 하지 않습니다.
+multer-s3-transform 을 쓰려고 했지만 npm에 node-js는 지원을 하지만 typescript는 지원을 하지 않는다.
 
 일단 코드에 적용을 시켜보니까 해당 모듈의 타입 지정이 되어있지 않은 오류가 났기 때문에, 잘 작동하는 다른 모듈을 대조해서 타입을 지정하는 파일을 작성했다. 
 
