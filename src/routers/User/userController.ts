@@ -2,7 +2,7 @@ import express, { RequestHandler } from "express"
 import Controller from "../interfaces/controller"
 import UserService from "./userService"
 import { User, UserDTO } from "../../models/User"
-import { validation, JwtPhoneValidation, JwtValidation } from "../../middlewares/validation"
+import { validation, JwtPhoneValidation, JwtValidation,scriptFilter } from "../../middlewares/validation"
 
 import { Types } from "mongoose"
 import upload from "../../middlewares/upload"
@@ -46,7 +46,7 @@ export default class UserController implements Controller {
 
   // 유저 생성
   private createUser: RequestHandler = async (req, res, next) => {
-    const userData: User = req.body
+    const userData: User = scriptFilter(req.body)
     const phoneData: string = res.locals.phone
     try {
       if (userData.role === "개발자") {
@@ -85,7 +85,7 @@ export default class UserController implements Controller {
   // 유저 정보 업데이트
   private updateUser: RequestHandler = async (req, res, next) => {
     const userId = res.locals.user
-    const userUpdateData: User = req.body
+    const userUpdateData: User = scriptFilter(req.body)
     const img = req.file && (req.file as Express.MulterS3.File)
     const imgUrl = img && img.location
 

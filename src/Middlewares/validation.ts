@@ -4,6 +4,7 @@ import express, { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import SMSModel from "../models/SMS/model";
 import UserModel from "../models/User/model";
+import sanitizeHtml from 'sanitize-html';
 
 interface TokenData {
   userId: string;
@@ -66,3 +67,14 @@ export const JwtPhoneValidation: RequestHandler = async (req, res, next) => {
     next(new Error("로그인 후 이용 가능한 기능입니다."));
   }
 };
+
+
+//XSS 공격 대비 body에 check
+
+export function scriptFilter(body:any){
+  const filterBody:any = {}
+  for(let key in body){
+    filterBody[key] = sanitizeHtml(body[key])
+  }
+  return filterBody
+}

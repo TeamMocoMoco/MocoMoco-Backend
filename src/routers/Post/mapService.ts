@@ -5,14 +5,14 @@ const axios = require("axios").default
 
 class MapService {
   private postModel = PostModel
-  constructor() {}
+  constructor() { }
 
   getLocationBySearch = async (keyword: string): Promise<any> => {
     // 키워드에 제일 근접한 장소 한 곳 검색
     const findPlaceFromText = await axios.get(
       `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?inputtype=textquery&fields=geometry&input=` +
-        encodeURI(keyword) +
-        `&key=${process.env.GOOGLE_API_KEY}`
+      encodeURI(keyword) +
+      `&key=${process.env.GOOGLE_API_KEY}`
     )
 
     // 검색 결과가 없는 경우
@@ -25,8 +25,8 @@ class MapService {
     // 좌표와 키워드로 장소 리스트 검색 + 리스트 JSON으로 보내기
     const response = await axios.get(
       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${coordinate}&radius=5000&language=ko&keyword=` +
-        encodeURI(keyword) +
-        `&key=${process.env.GOOGLE_API_KEY}`
+      encodeURI(keyword) +
+      `&key=${process.env.GOOGLE_API_KEY}`
     )
     return response
   }
@@ -61,7 +61,8 @@ class MapService {
       const location = posts[i].location
       if (location) {
         const distance = (location[0] - Lat) ** 2 + (location[1] - Lng) ** 2
-        distanceList.push({ i, distance })
+        if (distance <= 0.001098118933) //3km
+          distanceList.push({ i, distance })
       }
     }
     distanceList.sort(function (a, b) {
@@ -70,13 +71,17 @@ class MapService {
 
     // 위에 정렬된 순서대로 포스트 가져오기
     const postsList = []
-    if (distanceList.length > postsMaxNum) {
-      for (let j = 0; j < postsMaxNum; j++) {
-        postsList.push(posts[distanceList[j].i])
-      }
-      return postsList
+    for (let j = 0; j < distanceList.length; j++) {
+      postsList.push(posts[distanceList[j].i])
     }
-    return posts
+    if (postsList.length > postsMaxNum) {
+      const postsListMaxNum = []
+      for (let k = 0; k < postsMaxNum; k++) {
+        postsListMaxNum.push(postsList[k])
+      }
+      return postsListMaxNum
+    }
+    return postsList
   }
 
   // 위도경도를 의도적으로 왜곡
