@@ -39,7 +39,7 @@ Hoxy~🤔 함께 성장할 동료(Coworkers) 찾으시나요👀<br>
      
   - **DESIGN** 
 
-    ![](https://img.shields.io/badge/UI/UX-성유진-green?style=for-the-badge)
+    ![](https://img.shields.io/badge/UI/UX-성유진-yellow?style=for-the-badge)
 <hr>
 
 ## 🎯 타겟층
