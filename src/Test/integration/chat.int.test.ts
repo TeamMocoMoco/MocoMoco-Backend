@@ -7,9 +7,7 @@ import ChatController from "../../routers/Chat/chatController";
 import UserService from "../../routers/User/userService";
 import { PostModel } from "../../models/Post";
 
-const databaseName = "test";
 const app = new App([new PostController(), new SMSController(), new ChatController()]).app;
-process.env.TOKEN_KEY = "aaa";
 
 describe("Chat API Super Test", () => {
   const userService = new UserService();
