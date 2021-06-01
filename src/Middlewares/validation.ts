@@ -71,10 +71,12 @@ export const JwtPhoneValidation: RequestHandler = async (req, res, next) => {
 
 //XSS 공격 대비 body에 check
 
-export function scriptFilter(body:any){
-  const filterBody:any = {}
-  for(let key in body){
-    filterBody[key] = sanitizeHtml(body[key])
+export function scriptFilter(body: any) {
+  const filterBody: any = { ...body };
+  for (let key in body) {
+    if (typeof body[key] === "string") {
+      filterBody[key] = sanitizeHtml(body[key]);
+    }
   }
-  return filterBody
+  return filterBody;
 }

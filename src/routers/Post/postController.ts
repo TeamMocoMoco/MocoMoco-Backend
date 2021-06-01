@@ -1,7 +1,8 @@
 import express, { RequestHandler } from "express";
 import Controller from "../interfaces/controller";
 import { Post, PostDto, ParticipantDto } from "../../models/Post";
-import { validation, JwtValidation,scriptFilter } from "../../middlewares/validation";
+import { validation, JwtValidation, scriptFilter } from "../../middlewares/validation";
+import wordFilter from "../../middlewares/wordfilter";
 import PostService from "./postService";
 import MapService from "./mapService";
 import { Types } from "mongoose";
@@ -23,6 +24,7 @@ export default class PostController implements Controller {
     this.router.post(
       this.path,
       JwtValidation,
+      wordFilter,
       validation(PostDto, true),
       this.createPost
     );
